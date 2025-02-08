@@ -1,20 +1,21 @@
-// import React from "react";
+import React from "react";
 import { Button } from "react-bootstrap";
 
 const ActionButtons = () => {
   return (
-    <div className="text-center">
-      <div className="d-inline-flex justify-content-center gap-3 mt-4">
-        <Button variant="success" style={{ width: "150px", height: "50px" }}>
-          Order
-        </Button>
-        <Button variant="warning" style={{ width: "150px", height: "50px" }}>
-          Đặt Bàn
-        </Button>
-        <Button variant="info" style={{ width: "150px", height: "50px" }}>
-          Trạng Thái Bàn
-        </Button>
-      </div>
+    <div
+      className="d-flex justify-content-center align-items-center gap-3 mt-4"
+      style={{ paddingBottom: "20px" }}
+    >
+      <Button variant="success" className="px-4 py-2">
+        Order
+      </Button>
+      <Button variant="warning" className="px-4 py-2">
+        Đặt Bàn
+      </Button>
+      <Button variant="info" className="px-4 py-2">
+        Trạng Thái Bàn
+      </Button>
     </div>
   );
 };
