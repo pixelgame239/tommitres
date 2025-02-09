@@ -8,15 +8,15 @@ const images = [tomMit, doAn, nemNuong];
 
 const CarouselSlider = () => {
   return (
-    <div style={{ marginTop: "60px", overflow: "hidden" }} className="vw-100">
+    <div style={{ marginTop: "20px", overflow: "hidden" }} className="vw-100">
       <Carousel>
         {images.map((image, index) => (
           <Carousel.Item key={index}>
             <img
               className="d-block w-100"
-              src={`/assets/${image}`}
+              src={image}
               alt={image}
-              style={{ height: "400px", objectFit: "cover" }}
+              style={{ height: "700px", objectFit: "cover" }}
             />
             <Carousel.Caption>
               <h5>{image}</h5>

@@ -10,7 +10,6 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Email: ${email}\nPassword: ${password}`);
     navigate("/Home");
   };
 
