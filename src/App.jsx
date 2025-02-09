@@ -1,17 +1,10 @@
-import React from "react";
+/* eslint-disable no-unused-vars */
+// import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Header from "./Header";
-import CarouselSlider from "./MainCarousel";
-import ActionButtons from "./ActionButtons";
+import AppRoutes from "./routes/AppRoutes";
 
-const RestaurantApp = () => {
-  return (
-    <div style={{ overflowX: "hidden" }}>
-      <Header />
-      <CarouselSlider />
-      <ActionButtons />
-    </div>
-  );
+const App = () => {
+  return <AppRoutes />;
 };
 
-export default RestaurantApp;
+export default App;

@@ -1,7 +1,14 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import Login from "../pages/Login";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import App from "../App";
 
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -19,7 +26,9 @@ const Header = () => {
       }}
     >
       <h1 style={{ margin: 0 }}>Tôm&Mít Restaurant</h1>
-      <Button variant="primary">Đăng Nhập</Button>
+      <Button variant="primary" onClick={navigate("/Login")}>
+        Đăng Nhập
+      </Button>
     </div>
   );
 };
