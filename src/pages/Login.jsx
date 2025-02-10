@@ -14,34 +14,69 @@ const Login = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light vw-100">
-      <div className="card p-4 shadow" style={{ width: "350px" }}>
-        <h3 className="text-center mb-3">Đăng nhập</h3>
+    <div
+      className="d-flex justify-content-center align-items-center vh-100 vw-100"
+      style={{
+        background: "linear-gradient(to right, #74ebd5, #acb6e5)",
+      }}
+    >
+      <div
+        className="card p-5 shadow-lg d-flex flex-column justify-content-center"
+        style={{
+          width: "450px",
+          height: "520px",
+          borderRadius: "15px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+          backgroundColor: "white",
+        }}
+      >
+        <h3 className="text-center mb-4" style={{ color: "#333" }}>
+          Đăng nhập
+        </h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label className="form-label fw-semibold">Email</label>
             <input
               type="email"
-              className="form-control"
+              className="form-control p-2"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              style={{ borderRadius: "10px" }}
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Mật khẩu</label>
+          <div className="mb-4">
+            <label className="form-label fw-semibold">Mật khẩu</label>
             <input
               type="password"
-              className="form-control"
+              className="form-control p-2"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              style={{ borderRadius: "10px" }}
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100">
+          <button
+            type="submit"
+            className="btn w-100 p-2 fw-bold"
+            style={{
+              backgroundColor: "#4A90E2",
+              color: "white",
+              borderRadius: "10px",
+            }}
+          >
             Đăng nhập
           </button>
         </form>
+        <p className="text-center mt-3">
+          <a
+            href="#"
+            className="text-decoration-none"
+            style={{ color: "#4A90E2" }}
+          >
+            Quên mật khẩu?
+          </a>
+        </p>
       </div>
     </div>
   );
