@@ -25,7 +25,11 @@ const Header = () => {
         alignItems: "center",
       }}
     >
-      <h1 style={{ margin: 0 }}>Tôm&Mít Restaurant</h1>
+      <h1 style={{ margin: 0 }}>
+        <a href="">
+          <img src="src\assets\title.png" width={300} alt="Tôm & Mít Restaurant"></img>
+        </a>
+      </h1>
       <Button variant="primary" onClick={() => navigate("/Login")}>
         Đăng Nhập
       </Button>

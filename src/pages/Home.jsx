@@ -14,6 +14,16 @@ const Home = () => {
         <Header />
         <CarouselSlider />
         <ActionButtons />
+        <div style={{
+          position: "fixed",
+          bottom: "40px",         
+          right: "25px",         
+          zIndex: 1000
+        }}>
+          <a href="https://www.facebook.com/TOM.MIT.88/?locale=vi_VN" target="_blank">
+            <img src="src/assets/Facebook-logo.png" width={100}></img>
+          </a>
+        </div>
       </div>
     </div>
   );
