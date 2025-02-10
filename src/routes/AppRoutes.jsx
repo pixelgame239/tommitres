@@ -11,8 +11,8 @@ import Home from "../pages/Home";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/Home" element={<Home />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/Login" element={<Login />} />
     </Routes>
   );
 };
