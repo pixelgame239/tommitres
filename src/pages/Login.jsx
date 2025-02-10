@@ -17,7 +17,7 @@ const Login = () => {
     <div
       className="d-flex justify-content-center align-items-center vh-100 vw-100"
       style={{
-        background: "linear-gradient(to right, #74ebd5, #acb6e5)",
+        background: "#f0f2f5", // Thay đổi thành một màu đơn
       }}
     >
       <div
