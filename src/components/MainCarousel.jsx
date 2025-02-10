@@ -18,10 +18,6 @@ const CarouselSlider = () => {
               alt={image}
               style={{ height: "700px", objectFit: "cover" }}
             />
-            <Carousel.Caption>
-              <h5>{image}</h5>
-              <p>Mô tả ngắn gọn về món ăn.</p>
-            </Carousel.Caption>
           </Carousel.Item>
         ))}
       </Carousel>
