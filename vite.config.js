@@ -6,6 +6,6 @@ export default defineConfig({
   build: {
     outDir: 'build',
   },
-  base: '/tommitres',
+  base: '/',
   plugins: [react()],
 })

@@ -31,7 +31,7 @@ const Header = () => {
           <img src={tommittitle} width={300} alt="Tôm & Mít Restaurant"></img>
         </a>
       </h1>
-      <Button variant="primary" onClick={() => navigate("/tommitres/Login")}>
+      <Button variant="primary" onClick={() => navigate("/Login")}>
         Đăng Nhập
       </Button>
     </div>
