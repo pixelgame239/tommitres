@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Login from "../pages/Login";
+import tommittitle from "../assets/title.png";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import App from "../App";
 
@@ -27,10 +28,10 @@ const Header = () => {
     >
       <h1 style={{ margin: 0 }}>
         <a href="">
-          <img src="src\assets\title.png" width={300} alt="Tôm & Mít Restaurant"></img>
+          <img src={tommittitle} width={300} alt="Tôm & Mít Restaurant"></img>
         </a>
       </h1>
-      <Button variant="primary" onClick={() => navigate("/Login")}>
+      <Button variant="primary" onClick={() => navigate("/tommitres/Login")}>
         Đăng Nhập
       </Button>
     </div>
