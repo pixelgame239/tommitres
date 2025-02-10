@@ -26,7 +26,7 @@ const Header = () => {
       }}
     >
       <h1 style={{ margin: 0 }}>Tôm&Mít Restaurant</h1>
-      <Button variant="primary" onClick={navigate("/Login")}>
+      <Button variant="primary" onClick={() => navigate("/Login")}>
         Đăng Nhập
       </Button>
     </div>
