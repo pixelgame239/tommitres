@@ -27,7 +27,9 @@ const Header = () => {
       }}
     >
       <h1 style={{ margin: 0 }}>
-        <a href="">
+        <a onClick={()=>navigate("/")} style={{
+          cursor: "pointer"
+        }}>
           <img src={tommittitle} width={300} alt="Tôm & Mít Restaurant"></img>
         </a>
       </h1>
