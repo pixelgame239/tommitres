@@ -24,6 +24,7 @@ const Header = () => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        marginBottom: 10
       }}
     >
       <h1 style={{ margin: 0 }}>
