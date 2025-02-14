@@ -5,6 +5,9 @@ const Order = () => {
     return <div>
         <Header />
         <Tables />
+        <Tables />
+        <Tables />
+        <Tables />
     </div>
 }
 export default Order;
