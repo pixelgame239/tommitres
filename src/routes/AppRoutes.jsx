@@ -12,9 +12,9 @@ import Order from "../pages/Order"
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/Login" element={<Login />} />
-      <Route path ="/Order" element={<Order />}/>
+      <Route path="/tommitres" element={<Home />} />
+      <Route path="/tommitres/Login" element={<Login />} />
+      <Route path ="/tommitres/Order" element={<Order />}/>
     </Routes>
   );
 };
