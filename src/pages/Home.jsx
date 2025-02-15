@@ -17,8 +17,8 @@ const Home = () => {
         <ActionButtons />
         <div style={{
           position: "fixed",
-          bottom: "40px",         
-          right: "25px",         
+          bottom: "20px",         
+          right: "15px",         
           zIndex: 1000
         }}>
           <a href="https://www.facebook.com/TOM.MIT.88/?locale=vi_VN" target="_blank">
