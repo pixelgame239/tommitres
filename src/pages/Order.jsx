@@ -1,10 +1,12 @@
 import Header from "../components/Header"
+import OnlineOrderButton from "../components/OnlineOrderButton";
 import Tables from "../components/Tables";
 
 const Order = () => {
     return <div>
         <Header />
         <div style={{marginTop:80}}/>
+        <OnlineOrderButton></OnlineOrderButton>
         <Tables tableNumber ={1} tableStatus={false}></Tables>
         <Tables tableNumber ={2} tableStatus={true}></Tables>
         <Tables tableNumber ={3} tableStatus={true}></Tables>
