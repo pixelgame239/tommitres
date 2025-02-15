@@ -10,7 +10,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/");
+    navigate("/tommitres");
   };
 
   return (
