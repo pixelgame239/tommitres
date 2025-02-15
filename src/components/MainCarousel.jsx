@@ -16,7 +16,7 @@ const CarouselSlider = () => {
               className="d-block w-100"
               src={image}
               alt={image}
-              style={{ height: "700px", objectFit: "cover" }}
+              style={{ height: "600px", objectFit: "cover" }}
             />
           </Carousel.Item>
         ))}
