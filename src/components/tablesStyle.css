@@ -6,6 +6,8 @@
     max-width: 300px;
     height: 100%;
     text-align: center;
+    cursor: pointer;
+    height: 400px;
 }
 .table .table-number{
     z-index: 10;
