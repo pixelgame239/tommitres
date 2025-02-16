@@ -3,8 +3,10 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Login from "../pages/Login";
+import tommittitle from "../assets/title.png";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import App from "../App";
+import phoneCall from "../assets/call.png";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -23,10 +25,23 @@ const Header = () => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        marginBottom: 10
       }}
     >
-      <h1 style={{ margin: 0 }}>Tôm&Mít Restaurant</h1>
-      <Button variant="primary" onClick={() => navigate("/Login")}>
+      <h1 style={{ margin: 0 }}>
+        <a onClick={()=>navigate("/tommitres")} style={{
+          cursor: "pointer"
+        }}>
+          <img src={tommittitle} width={300} alt="Tôm & Mít Restaurant"></img>
+        </a>
+      </h1>
+      <a href="tel: " style={{marginLeft:400}}>
+         <div>
+          <img src={phoneCall} height={50} style={{margin:10}}></img>
+          <p style={{display:"inline-block"}}>Gọi cho chúng tôi: 097 337 03 66</p>
+      </div>
+      </a>
+      <Button variant="primary" onClick={() => navigate("/tommitres/Login")}>
         Đăng Nhập
       </Button>
     </div>

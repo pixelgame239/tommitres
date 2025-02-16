@@ -1,0 +1,42 @@
+.table{
+    display: inline-block;
+    padding: 10px;
+    margin: 20px;
+    border: 1px solid black;
+    max-width: 300px;
+    height: 100%;
+    text-align: center;
+    cursor: pointer;
+    height: 400px;
+}
+.table .table-number{
+    z-index: 10;
+    top: 40px;
+    text-align: center;
+    position: relative;
+}
+.table .table-display{
+    max-width: 150px;
+}
+.table .table-status{
+    font-size: 18px;
+    color:rgb(13, 120, 13);
+    overflow-wrap: break-word;
+}
+.table .table-status-full{
+    font-size: 18px;
+    color: red;
+    overflow-wrap: break-word;
+}
+.table .table-status-controller, .table-order{
+    font-size: 16px;
+    padding: 20px;
+    margin: 5px;
+    color: black;
+}
+.table-status-controller{
+    background-color: yellowgreen;
+}
+.table-order{
+    background-color: aquamarine;
+}
