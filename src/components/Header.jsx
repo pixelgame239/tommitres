@@ -38,12 +38,13 @@ const Header = () => {
           <img src={tommittitle} width={300} alt="Tôm & Mít Restaurant"></img>
         </a>
       </h1>
-      <a href="tel:0869003199" style={{ marginLeft: 400 }}>
+      <a href="tel:0862051226" style={{ marginLeft: 400 }}>
         <div>
           <img src={phoneCall} height={50} style={{ margin: 10 }}></img>
 
           <p style={{ display: "inline-block" }}>Gọi ngay</p>
         </div>
+
       </a>
       <Button variant="primary" onClick={() => navigate("/tommitres/Login")}>
         Đăng Nhập
