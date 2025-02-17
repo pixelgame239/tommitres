@@ -16,7 +16,6 @@ const fetchProduct = async () => {
       ...doc.data(), // Dữ liệu của document
     }));
 
-    console.log("Danh sách sản phẩm:", products);
     return products;
   } catch (error) {
     console.error("Lỗi khi lấy sản phẩm:", error);
