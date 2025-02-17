@@ -25,6 +25,9 @@ const ActionButtons = () => {
       </Button>
 
       <AddProductButton />
+      <Button variant="warning" className="px-4 py-2" onClick={()=>navigate("/tommitres/DetailedRevenue")}> 
+        Doanh Thu
+      </Button>
     </div>
   );
 };

@@ -7,6 +7,8 @@ import ActionButtons from "../components/ActionButtons";
 import fbLogo from '../assets/Facebook-logo.png'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./Login";
+import ReservationScreen from "./ReservationScreen"; 
+import DetailedRevenueScreen from "./DetailedRevenueScreen";
 
 const Home = () => {
   return (
