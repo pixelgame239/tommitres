@@ -1,4 +1,4 @@
-import  "./tablesStyle.css";
+import "../styles/tablesStyle.css";
 import { useNavigate } from "react-router-dom";
 
 const OnlineOrderButton = () => {
