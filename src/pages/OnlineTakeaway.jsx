@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 import FoodItem from "../components/FoodItem";
 import fetchProduct from "../backend/fetchProduct"; // Hàm fetch dữ liệu từ bảng Product
 
@@ -25,14 +26,17 @@ const OnlineTakeAway = () => {
     getProducts();
   }, []);
 
+  // Xác định nếu màn hình là điện thoại (dưới 768px)
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+
   return (
     <div style={{ height: "100vh", overflowY: "auto", padding: 20 }}>
       <h2>Đồ ăn 🍕</h2>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 20,
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)", // 2 cột trên điện thoại, 3 cột trên màn hình lớn
+          gap: 10,
         }}
       >
         {foodData.map((item) => (
@@ -49,7 +53,7 @@ const OnlineTakeAway = () => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)", // 2 cột trên điện thoại, 3 cột trên màn hình lớn
           gap: 20,
         }}
       >

@@ -20,13 +20,20 @@ const ActionButtons = () => {
       >
         Order
       </Button>
-      <Button variant="warning" className="px-4 py-2" onClick={()=>navigate("/tommitres/Reservation")}> 
+      <Button
+        variant="warning"
+        className="px-4 py-2"
+        onClick={() => navigate("/tommitres/Reservation")}
+      >
         Đặt Bàn
       </Button>
       <Button variant="info" className="px-4 py-2">
         Trạng Thái Bàn
       </Button>
       <AddProductButton />
+      <Button variant="warning" className="px-4 py-2" onClick={()=>navigate("/tommitres/DetailedRevenue")}> 
+        Doanh Thu
+      </Button>
     </div>
   );
 };

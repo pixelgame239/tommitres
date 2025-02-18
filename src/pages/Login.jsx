@@ -1,16 +1,60 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { db } from "../backend/firebase"; // Import db từ firebase.jsx
+import { collection, getDocs } from "firebase/firestore"; // Sử dụng Firestore API
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const fetchAccounts = async (username, password) => {
+    try {
+      console.log("Đang thực hiện yêu cầu lấy tất cả tài khoản...");
+      setLoading(true);
+      const accountsRef = collection(db, "Account"); // Truy vấn tất cả tài khoản trong collection "Account"
+      console.log("Truy vấn tất cả tài khoản");
+
+      const querySnapshot = await getDocs(accountsRef); // Lấy tất cả tài khoản trong collection
+      console.log("Kết quả từ Firestore:", querySnapshot);
+
+      let isAuthenticated = false; // Biến để kiểm tra nếu tìm thấy tài khoản hợp lệ
+
+      querySnapshot.forEach((doc) => {
+        const accountData = doc.data();
+        console.log("Dữ liệu tài khoản:", accountData);
+
+        // Kiểm tra nếu tài khoản trùng khớp với username và password
+        if (
+          accountData.Username === username &&
+          accountData.Password === password
+        ) {
+          isAuthenticated = true; // Đánh dấu là đã tìm thấy tài khoản hợp lệ
+          console.log("Đăng nhập thành công.");
+          navigate("/tommitres"); // Điều hướng sau khi đăng nhập thành công
+        }
+      });
+
+      if (!isAuthenticated) {
+        setError("Tài khoản hoặc mật khẩu không đúng");
+        console.log("Tài khoản hoặc mật khẩu không đúng.");
+      }
+    } catch (error) {
+      setError("Đã xảy ra lỗi khi đăng nhập");
+      console.error("Lỗi trong khi lấy tài khoản từ Firestore:", error);
+    } finally {
+      setLoading(false);
+      console.log("Kết thúc quá trình đăng nhập.");
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/tommitres");
+    console.log("Form đã được submit.");
+    fetchAccounts(username, password); // Gọi hàm fetchAccounts khi người dùng submit form
   };
 
   return (
@@ -35,12 +79,12 @@ const Login = () => {
         </h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label fw-semibold">Email</label>
+            <label className="form-label fw-semibold">Tên người dùng</label>
             <input
-              type="email"
+              type="text"
               className="form-control p-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               style={{ borderRadius: "10px" }}
             />
@@ -64,10 +108,15 @@ const Login = () => {
               color: "white",
               borderRadius: "10px",
             }}
+            disabled={loading} // Disable nút khi đang tải
           >
-            Đăng nhập
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
+
+        {/* Hiển thị lỗi nếu có */}
+        {error && <p className="text-center text-danger mt-3">{error}</p>}
+
         <p className="text-center mt-3">
           <a
             href="#"
