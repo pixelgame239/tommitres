@@ -15,7 +15,6 @@ const CarouselSlider = () => {
             <img
               className="d-block w-100"
               src={image}
-              alt={image}
               style={{ height: "600px", objectFit: "cover" }}
             />
           </Carousel.Item>
