@@ -1,0 +1,156 @@
+.table{
+    display: inline-block;
+    padding: 10px;
+    margin: 20px;
+    border: 1px solid black;
+    max-width: 300px;
+    height: 100%;
+    text-align: center;
+    cursor: pointer;
+    height: 400px;
+}
+.table .table-number{
+    z-index: 10;
+    top: 40px;
+    text-align: center;
+    position: relative;
+}
+.table .table-display{
+    max-width: 150px;
+}
+.table .table-status{
+    font-size: 18px;
+    color:rgb(13, 120, 13);
+    overflow-wrap: break-word;
+}
+.table .table-status-full{
+    font-size: 18px;
+    color: red;
+    overflow-wrap: break-word;
+}
+.table .table-status-controller, .table-order{
+    font-size: 16px;
+    padding: 20px;
+    margin: 5px;
+    color: black;
+}
+.table-status-controller{
+    background-color: yellowgreen;
+}
+.table-order{
+    background-color: aquamarine;
+}
+.container {
+    margin: 0 auto;
+    max-width: 1000px;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 28px;
+    color: #2C3E50;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+  .search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .input-field {
+    padding: 12px;
+    margin-right: 10px;
+    border-radius: 8px;
+    border: 1px solid #BDC3C7;
+    width: 45%;
+    font-size: 16px;
+    background-color: #ecf0f1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+  }
+  
+  .input-field:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.7);
+  }
+  
+  .button {
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 25%;
+    font-size: 16px;
+    transition: all 0.3s;
+  }
+  
+  .button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+  }
+  
+  .reload-button {
+    background-color: #e74c3c;
+  }
+  
+  .reload-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .revenue-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .revenue-table th, .revenue-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  .revenue-table th {
+    background-color: #f4f6f7;
+    color: #2C3E50;
+  }
+  
+  .revenue-table tr:hover {
+    background-color: #ecf0f1;
+  }
+  
+  .revenue-table td {
+    background-color: #ffffff;
+    color: #34495e;
+  }
+  
+  @media (max-width: 768px) {
+    .search-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .input-field, .button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  
+    .button {
+      margin-left: 0;
+    }
+  
+    .revenue-table th, .revenue-table td {
+      padding: 10px;
+      font-size: 14px;
+    }
+  }
+  
