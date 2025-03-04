@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import FoodItem from "../components/FoodItem";
 import fetchProduct from "../backend/fetchProduct"; // Hàm fetch dữ liệu từ bảng Product
+import myImage from "../assets/call.png";
 
 const OnlineTakeAway = () => {
   const [foodData, setFoodData] = useState([]);
@@ -26,29 +27,18 @@ const OnlineTakeAway = () => {
     getProducts();
   }, []);
 
-  // Xác định nếu màn hình là điện thoại (dưới 768px)
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   return (
-    <div
-      style={{
-        // height: "100vh",
-        overflow: "auto",
-        padding: 10,
-        // paddingLeft: 0,
-        // marginLeft: 0,
-      }}
-    >
+    <div style={{ overflow: "auto", padding: 10 }}>
       <h2>Đồ ăn 🍕</h2>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", // 2 cột trên điện thoại, 4 cột trên màn hình lớn
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
           gap: 10,
-          justifyItems: "left", // Căn giữa các phần tử con trong grid theo chiều ngang
-          alignItems: "center", // Căn các phần tử con theo chiều dọc (top alignment)
-          paddingLeft: 0,
-          marginLeft: 0,
+          justifyItems: "center",
+          alignItems: "center",
         }}
       >
         {foodData.map((item) => (
@@ -65,12 +55,10 @@ const OnlineTakeAway = () => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", // 2 cột trên điện thoại, 4 cột trên màn hình lớn
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
           gap: 10,
-          justifyItems: "left", // Căn giữa các phần tử con trong grid theo chiều ngang
-          alignItems: "center", // Căn các phần tử con theo chiều dọc (top alignment)
-          paddingLeft: 0,
-          marginLeft: 0,
+          justifyItems: "center",
+          alignItems: "center",
         }}
       >
         {drinkData.map((item) => (
@@ -79,19 +67,20 @@ const OnlineTakeAway = () => {
             productName={item.productName}
             unitPrice={item.unitPrice}
             description={item.description}
+            image={myImage} // Đảm bảo ảnh nằm trong thư mục public/images
           />
         ))}
       </div>
 
       <button
         style={{
+          position: "fixed",
           bottom: 20,
           right: 20,
-          position: "fixed",
-          color: "green",
+          padding: 20,
           backgroundColor: "white",
           borderColor: "blue",
-          padding: 20,
+          color: "green",
         }}
       >
         Đặt hàng
