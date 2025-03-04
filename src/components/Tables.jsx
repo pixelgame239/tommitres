@@ -1,5 +1,5 @@
 import table_empty from "../assets/table_empty.png";
-import './tablesStyle.css';
+import "../styles/tablesStyle.css";
 import table_full from "../assets/table_full.png"
 import { Table } from "../backend/tableData";
 

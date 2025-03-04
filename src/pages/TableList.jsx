@@ -5,13 +5,31 @@ import OnlineOrderButton from "../components/OnlineOrderButton";
 
 const TableList = () =>{
     const [tableData, setTableData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const table = new Table();
-        table.getTableData().then((data) => {
-            setTableData(data);
-        });
+        const fetchData = async()=>{
+            try{
+                const data = await table.getTableData();
+                setTableData(data);
+                setLoading(false);
+            } catch(error){
+                setLoading(false);
+            }
+        };
+        fetchData();
     }, []);
+    if(loading){
+        return(
+            <div style={{textAlign: "center"}}>Loading....</div>
+        )
+    }
+    if(!tableData){
+        return(
+            <div style={{textAlign: "center"}}>Unexpected Error!</div>
+        )
+    }
     return(
         <div>
             <OnlineOrderButton></OnlineOrderButton>
