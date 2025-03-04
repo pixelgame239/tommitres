@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
+import { useNavigate } from "react-router-dom";
 import FoodItem from "../components/FoodItem";
 import fetchProduct from "../backend/fetchProduct"; // Hàm fetch dữ liệu từ bảng Product
+import YourOrder from "./YourOrder";
 
 const OnlineTakeAway = () => {
   const [foodData, setFoodData] = useState([]);
   const [drinkData, setDrinkData] = useState([]);
+  const navigate = useNavigate(); // Hook điều hướng
+
 
   useEffect(() => {
     const getProducts = async () => {
@@ -68,6 +72,7 @@ const OnlineTakeAway = () => {
       </div>
 
       <button
+      onClick={() => navigate("/tommitres/yourorder")}
         style={{
           bottom: 20,
           right: 20,
