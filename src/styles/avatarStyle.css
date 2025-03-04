@@ -1,0 +1,7 @@
+.user-avatar-container{
+    height: 40px;
+}
+.user-avatar{
+    height: inherit;
+    object-fit: contain;
+}

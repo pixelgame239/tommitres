@@ -5,10 +5,17 @@ import { useNavigate } from "react-router-dom";
 import tommittitle from "../assets/title.png";
 import phoneCall from "../assets/call.png";
 import ResponsiveScreen from "../styles/responsiveScreen";
+import UserProfile from "../backend/userProfile";
+import staffAvt from "../assets/staffAvt.png";
+import manAvt from "../assets/managerAvt.png";
+import chefAvt from "../assets/chefAvt.png";
+import "../styles/avatarStyle.css";
+import notiIcon from "../assets/notificationIcon.png";
 
 const Header = () => {
   const navigate = useNavigate();
   const { width } = ResponsiveScreen();
+  const { userType } = UserProfile();
   const isMobile = width <= 768;
   return (
     <div
@@ -35,17 +42,24 @@ const Header = () => {
             cursor: "pointer",
           }}
         >
-          <img src={tommittitle} width={isMobile ? width/2.5 : width/3} alt="Tôm & Mít Restaurant"></img>
+          <img src={tommittitle} width={isMobile ? width/3 : width/2.5} alt="Tôm & Mít Restaurant"></img>
         </a>
       </h1>
       <a href="tel:0862051226">
         <div>
-          <img src={phoneCall} height= {isMobile ?"50px": "80px"} style={{ margin: 5 }}></img>
+          <img src={phoneCall} height= {isMobile ?'50px': '80px'} style={{marginRight: 5}}></img>
           <p style={{ display: "inline-block", fontSize: isMobile ? '12px' : '18px' }}>Gọi ngay</p>
         </div>
       </a>
-      <Button variant="primary" onClick={() => navigate("/tommitres/Login")}>
-        Đăng Nhập
+        {userType===null||userType===undefined?null
+        : <div className="user-avatar-container">
+        <img src={notiIcon} className="user-avatar"></img>
+      </div>} 
+      <Button variant="primary" style = {{fontSize: isMobile ? '12px' : '18px'}} onClick={userType===null||userType===undefined ? () => navigate("/tommitres/Login") : ()=>{localStorage.removeItem("currentUser")}}>
+        {userType===null||userType===undefined?"Đăng nhập"
+        : (userType.startsWith("ST"))?<div className="user-avatar-container"><img className="user-avatar" src= {staffAvt}></img></div>
+        : (userType.startsWith("M"))?<div  className="user-avatar-container"><img src={manAvt} className="user-avatar"></img></div>
+        :<div  className="user-avatar-container"><img src={chefAvt} className='user-avatar'></img></div>}
       </Button>
     </div>
   );
