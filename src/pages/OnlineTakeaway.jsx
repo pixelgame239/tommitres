@@ -30,13 +30,25 @@ const OnlineTakeAway = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   return (
-    <div style={{ height: "100vh", overflowY: "auto", padding: 20 }}>
+    <div
+      style={{
+        // height: "100vh",
+        overflow: "auto",
+        padding: 10,
+        // paddingLeft: 0,
+        // marginLeft: 0,
+      }}
+    >
       <h2>Đồ ăn 🍕</h2>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)", // 2 cột trên điện thoại, 3 cột trên màn hình lớn
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", // 2 cột trên điện thoại, 4 cột trên màn hình lớn
           gap: 10,
+          justifyItems: "left", // Căn giữa các phần tử con trong grid theo chiều ngang
+          alignItems: "center", // Căn các phần tử con theo chiều dọc (top alignment)
+          paddingLeft: 0,
+          marginLeft: 0,
         }}
       >
         {foodData.map((item) => (
@@ -53,8 +65,12 @@ const OnlineTakeAway = () => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)", // 2 cột trên điện thoại, 3 cột trên màn hình lớn
-          gap: 20,
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", // 2 cột trên điện thoại, 4 cột trên màn hình lớn
+          gap: 10,
+          justifyItems: "left", // Căn giữa các phần tử con trong grid theo chiều ngang
+          alignItems: "center", // Căn các phần tử con theo chiều dọc (top alignment)
+          paddingLeft: 0,
+          marginLeft: 0,
         }}
       >
         {drinkData.map((item) => (
