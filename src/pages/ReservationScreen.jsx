@@ -8,11 +8,10 @@ const ReservationScreen = () => {
   const [time, setTime] = useState('');
   const [guests, setGuests] = useState(1);
 
-  // Thông báo lỗi
   const [nameError, setNameError] = useState('');
   const [phoneError, setPhoneError] = useState('');
 
-  // Kiểm tra tên khách hàng (chỉ cho phép chữ cái và khoảng trắng)
+  // Kiểm tra tên khách hàng (chữ cái và khoảng trắng)
   const handleNameChange = (e) => {
     const input = e.target.value;
     if (/^[a-zA-ZÀ-ỹ\s]*$/.test(input)) {
@@ -23,12 +22,11 @@ const ReservationScreen = () => {
     }
   };
 
-  // Kiểm tra số điện thoại theo định dạng Việt Nam
+  // Kiểm tra số điện thoại Việt Nam
   const handlePhoneChange = (e) => {
     const input = e.target.value;
     setPhone(input);
 
-    // Số điện thoại Việt Nam hợp lệ
     const phonePattern = /^0[3|5|7|8|9][0-9]{8}$/;
     if (phonePattern.test(input)) {
       setPhoneError('');
@@ -39,163 +37,175 @@ const ReservationScreen = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Kiểm tra thông tin nhập đầy đủ
     if (name.trim() === '' || phone.trim() === '' || date.trim() === '' || time.trim() === '' || guests < 1) {
       alert('Vui lòng nhập đầy đủ thông tin!');
       return;
     }
 
-    // Kiểm tra lại số điện thoại khi nhấn "Đặt Bàn"
     const phonePattern = /^0[3|5|7|8|9][0-9]{8}$/;
     if (!phonePattern.test(phone)) {
       alert('Số điện thoại không hợp lệ! (VD: 0987654321)');
       return;
     }
 
-    // Hiển thị thông tin trên console và thông báo đặt bàn thành công
-    console.log({
-      name,
-      phone,
-      date,
-      time,
-      guests,
-    });
+    console.log({ name, phone, date, time, guests });
     alert('Đặt bàn thành công!');
   };
 
   return (
-    <div>
-      {/* Thêm Header và khoảng cách trên giống như trong Order */}
+    <div className="reservation-container">
       <Header />
-      <div style={{ marginTop: 90 }} />
+      <div style={{ marginTop: 130 }} />
 
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Thông Tin Đặt Bàn 📅</h2>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: '20px',
-          padding: '20px',
-        }}
-      >
-        <div style={{ margin: 10 }}>
+      <h2 className="title">Thông Tin Đặt Bàn 📅</h2>
+      <div className="reservation-form">
+        <div className="input-group">
           <label>Tên khách hàng:</label>
           <input
             type="text"
             value={name}
             onChange={handleNameChange}
             placeholder="Nhập tên khách hàng"
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              borderRadius: '5px',
-              backgroundColor: '#E0FFFF',
-              borderColor: '#1E90FF',
-              color: 'black'
-            }}
             required
           />
           {nameError && (
-            <p style={{ color: 'red', fontSize: '14px' }}>{nameError}</p>
+            <p className="error-text">{nameError}</p>
           )}
         </div>
-        <div style={{ margin: 10 }}>
+        <div className="input-group">
           <label>Số điện thoại:</label>
           <input
             type="tel"
             value={phone}
             onChange={handlePhoneChange}
             placeholder="Nhập số điện thoại"
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              borderRadius: '5px',
-              backgroundColor: '#E0FFFF',
-              borderColor: '#1E90FF',
-              color: 'black'
-            }}
             required
           />
           {phoneError && (
-            <p style={{ color: 'red', fontSize: '14px' }}>{phoneError}</p>
+            <p className="error-text">{phoneError}</p>
           )}
         </div>
-        <div style={{ margin: 10 }}>
+        <div className="input-group">
           <label>Ngày đặt:</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              borderRadius: '5px', 
-              backgroundColor: '#E0FFFF', 
-              borderColor: '#1E90FF',
-              color: 'black',            
-              WebkitTextFillColor: 'black' 
-            }}
-            required
-          />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
         </div>
-        <div style={{ margin: 10 }}>
+        <div className="input-group">
           <label>Giờ đặt:</label>
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              borderRadius: '5px', 
-              backgroundColor: '#E0FFFF', 
-              borderColor: '#1E90FF',
-              color: 'black',            
-              WebkitTextFillColor: 'black' 
-            }}
-            required
-          />
-          {/* Thêm ghi chú: Quá 10 phút sẽ hủy bàn */}
-          <p style={{ color: 'red', fontWeight: 'bold', fontSize: '14px' }}>
-            Lưu ý:Quá 10 phút sẽ hủy thông tin đặt.
-          </p>
+          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
+          <p className="note">Lưu ý: Quá 10 phút sẽ hủy thông tin đặt.</p>
         </div>
-        <div style={{ margin: 10 }}>
+        <div className="input-group">
           <label>Số lượng khách:</label>
           <input
             type="number"
             value={guests}
             onChange={(e) => setGuests(e.target.value)}
             min="1"
-            style={{ 
-              width: '100%', 
-              padding: '10px', 
-              borderRadius: '5px',
-              backgroundColor: '#E0FFFF',
-              borderColor: '#1E90FF',
-              color: 'black'
-            }}
             required
           />
         </div>
       </div>
-      <button
-        onClick={handleSubmit}
-        style={{
-          bottom: 20,
-          right: 20,
-          position: 'fixed',
-          color: 'green',
-          backgroundColor: 'white',
-          borderColor: 'blue',
-          padding: '20px',
-          borderRadius: '10px',
-          cursor: 'pointer',
-        }}
-      >
+      <button className="submit-button" onClick={handleSubmit}>
         Đặt Bàn
       </button>
+
+      <style jsx>{`
+        .reservation-container {
+          max-width: 100vw;
+          overflow-x: hidden;
+          padding: 10px;
+        }
+
+        .title {
+          text-align: center;
+          color: #2c3e50;
+          margin-bottom: 15px;
+          font-size: 24px;
+        }
+
+        .reservation-form {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 15px;
+          padding: 20px;
+          background-color: #f8f9fa;
+          border-radius: 15px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          max-width: 400px;
+          margin: 0 auto;
+        }
+
+        .input-group {
+          margin-bottom: 10px;
+        }
+
+        input {
+          width: 100%;
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px solid #d1d8e0;
+          background-color: #ffffff;
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+          transition: border 0.3s;
+          color: #000;
+        }
+
+        input[type="date"],
+        input[type="time"] {
+          color: #000;
+        }
+
+        input:focus {
+          outline: none;
+          border: 1px solid #1e90ff;
+        }
+
+        .note {
+          color: #e74c3c;
+          font-weight: bold;
+          font-size: 13px;
+        }
+
+        .error-text {
+          color: #e74c3c;
+          font-size: 13px;
+        }
+
+        .submit-button {
+          width: 90%;
+          padding: 15px;
+          border-radius: 25px;
+          background-color: #1e90ff;
+          color: white;
+          border: none;
+          cursor: pointer;
+          margin: 20px auto;
+          display: block;
+          text-align: center;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 480px) {
+          .reservation-form {
+            padding: 15px;
+          }
+
+          input {
+            padding: 10px;
+          }
+
+          .submit-button {
+            width: 100%;
+            padding: 12px;
+          }
+        }
+      `}</style>
     </div>
   );
 };
