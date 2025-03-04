@@ -11,6 +11,8 @@ import Order from "../pages/Order"
 import OnlineTakeAway from "../pages/OnlineTakeaway";
 import ReservationScreen from "../pages/ReservationScreen";
 import DetailedRevenueScreen from "../pages/DetailedRevenueScreen";
+import YourOrder from "../pages/YourOrder"; // Import file mới
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -20,6 +22,7 @@ const AppRoutes = () => {
       <Route path ="/tommitres/Order" element={<Order />}/>
       <Route path ="/tommitres/Order/Takeaway" element={<OnlineTakeAway />}/>
       <Route path="/tommitres/DetailedRevenue" element={<DetailedRevenueScreen />} />
+      <Route path="/tommitres/yourorder" element={<YourOrder />} />  
     </Routes>
   );
 };
