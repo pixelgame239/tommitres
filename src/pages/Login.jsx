@@ -32,9 +32,11 @@ const Login = () => {
           accountData.Username === username &&
           accountData.Password === password
         ) {
-          isAuthenticated = true; // Đánh dấu là đã tìm thấy tài khoản hợp lệ
+          isAuthenticated = true; 
+          const userType = { username };
+          localStorage.setItem('currentUser', JSON.stringify(userType));
           console.log("Đăng nhập thành công.");
-          navigate("/tommitres"); // Điều hướng sau khi đăng nhập thành công
+          navigate("/tommitres"); 
         }
       });
 
