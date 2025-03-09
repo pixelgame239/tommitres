@@ -11,6 +11,7 @@ import manAvt from "../assets/managerAvt.png";
 import chefAvt from "../assets/chefAvt.png";
 import "../styles/avatarStyle.css";
 import notiIcon from "../assets/notificationIcon.png";
+import AvatarButton from "./AvatarButton";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -52,15 +53,10 @@ const Header = () => {
         </div>
       </a>
         {userType===null||userType===undefined?null
-        : <div className="user-avatar-container">
-        <img src={notiIcon} className="user-avatar"></img>
+        : <div className="noti-icon-container">
+        <img src={notiIcon} className="noti-icon"></img>
       </div>} 
-      <Button variant="primary" style = {{fontSize: isMobile ? '12px' : '18px'}} onClick={userType===null||userType===undefined ? () => navigate("/tommitres/Login") : ()=>{localStorage.removeItem("currentUser")}}>
-        {userType===null||userType===undefined?"Đăng nhập"
-        : (userType.startsWith("ST"))?<div className="user-avatar-container"><img className="user-avatar" src= {staffAvt}></img></div>
-        : (userType.startsWith("M"))?<div  className="user-avatar-container"><img src={manAvt} className="user-avatar"></img></div>
-        :<div  className="user-avatar-container"><img src={chefAvt} className='user-avatar'></img></div>}
-      </Button>
+          <AvatarButton></AvatarButton>
     </div>
   );
 };
