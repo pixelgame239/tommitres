@@ -10,7 +10,7 @@ const ActionButtons = () => {
   const isMobile = width <=768;
   return (
     <div
-      className="d-flex justify-content-center align-items-center gap-3 mt-4"
+      className="d-flex justify-content-center align-items-center gap-3 mt-4 flex-wrap"
       style={{ paddingBottom: "20px", paddingTop: "20px"}}
     >
       <Button
