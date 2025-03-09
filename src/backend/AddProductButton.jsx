@@ -3,7 +3,7 @@ import { addProduct } from "./addProduct";
 
 const AddProductButton = () => {
   const handleAddProduct = () => {
-    addProduct("Drink", "Siêu ngọt", "P12345", "Trà sữa trân châu", 20000);
+    addProduct("Food", "Siêu ngọt", "P12345", "Trà sữa trân châu", 20000);
   };
 
   return (
