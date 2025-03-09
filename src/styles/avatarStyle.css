@@ -1,0 +1,33 @@
+.user-avatar-container, .noti-icon-container{
+    position: relative;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid ;
+    justify-content: center;
+    cursor: pointer;
+}
+.user-avatar, .noti-icon{
+    height: 50px;
+    object-fit:contain;
+    scale: 70%;
+}
+.dropdown-menu {
+    position: absolute;
+    top: 60px;  
+    right: 0;
+    background-color: aliceblue;
+    border: 1px solid lightskyblue;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    width: 150px;  
+    z-index: 100;  
+    display: block; 
+}
+.dropdown-item{
+    background-color: aliceblue;
+    border: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+}
