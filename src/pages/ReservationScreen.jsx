@@ -1,213 +1,195 @@
-import React, { useState } from 'react';
-import Header from "../components/Header";
+import React, { useState } from "react";
 
-const ReservationScreen = () => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [guests, setGuests] = useState(1);
+const initialOrders = [
+  {
+    orderID: "DH12345", // Vẫn giữ trong dữ liệu nhưng không hiển thị
+    customerName: "Nguyễn Văn A",
+    status: "Đang xử lý",
+    orderDate: "2023-10-20 14:30",
+    tableNumber: "Bàn 1",
+    totalAmount: 345000,
+    items: [
+      { productID: 1, productName: "Pizza Margherita", unitPrice: 150000, quantity: 2 },
+      { productID: 2, productName: "Trà Sữa Trân Châu", unitPrice: 45000, quantity: 1 },
+    ],
+    paymentMethod: "Tiền mặt",
+  },
+  {
+    orderID: "DH12346", // Vẫn giữ trong dữ liệu nhưng không hiển thị
+    customerName: "Trần Thị B",
+    status: "Đang xử lý",
+    orderDate: "2023-10-20 15:00",
+    tableNumber: "Bàn 2",
+    totalAmount: 195000,
+    items: [
+      { productID: 3, productName: "Burger Bò Phô Mai", unitPrice: 120000, quantity: 1 },
+      { productID: 4, productName: "Coca Cola", unitPrice: 15000, quantity: 5 },
+    ],
+    paymentMethod: "Chuyển khoản",
+  },
+];
 
-  const [nameError, setNameError] = useState('');
-  const [phoneError, setPhoneError] = useState('');
+const SellerOrderStatus = () => {
+  const [orders, setOrders] = useState(initialOrders);
+  const [filterStatus, setFilterStatus] = useState("Tất cả");
 
-  // Kiểm tra tên khách hàng (chữ cái và khoảng trắng)
-  const handleNameChange = (e) => {
-    const input = e.target.value;
-    if (/^[a-zA-ZÀ-ỹ\s]*$/.test(input)) {
-      setName(input);
-      setNameError('');
-    } else {
-      setNameError('Tên chỉ chứa chữ cái và khoảng trắng!');
-    }
+  const updateOrderStatus = (orderID, newStatus) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.orderID === orderID ? { ...order, status: newStatus } : order
+      )
+    );
+    alert(`Đã cập nhật trạng thái đơn hàng ${orderID} thành "${newStatus}"`);
   };
 
-  // Kiểm tra số điện thoại Việt Nam
-  const handlePhoneChange = (e) => {
-    const input = e.target.value;
-    setPhone(input);
-
-    const phonePattern = /^0[3|5|7|8|9][0-9]{8}$/;
-    if (phonePattern.test(input)) {
-      setPhoneError('');
-    } else {
-      setPhoneError('Số điện thoại không hợp lệ! (VD: 0987654321)');
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (name.trim() === '' || phone.trim() === '' || date.trim() === '' || time.trim() === '' || guests < 1) {
-      alert('Vui lòng nhập đầy đủ thông tin!');
-      return;
-    }
-
-    const phonePattern = /^0[3|5|7|8|9][0-9]{8}$/;
-    if (!phonePattern.test(phone)) {
-      alert('Số điện thoại không hợp lệ! (VD: 0987654321)');
-      return;
-    }
-
-    console.log({ name, phone, date, time, guests });
-    alert('Đặt bàn thành công!');
-  };
+  const filteredOrders = filterStatus === "Tất cả"
+    ? orders
+    : orders.filter((order) => order.status === filterStatus);
 
   return (
-    <div className="reservation-container">
-      <Header />
-      <div style={{ marginTop: 130 }} />
+    <div
+      style={{
+        padding: "20px",
+        maxWidth: "100%",
+        margin: "0 auto",
+        fontFamily: "Arial, sans-serif",
+        overflowX: "auto",
+        backgroundColor: "#f5f5f5",
+        borderRadius: "8px",
+      }}
+    >
+      <h1
+        style={{
+          fontSize: "clamp(20px, 5vw, 24px)",
+          fontWeight: "600",
+          marginBottom: "20px",
+          textAlign: "center",
+          color: "#333",
+        }}
+      >
+        Quản lý trạng thái đơn hàng
+      </h1>
 
-      <h2 className="title">Thông Tin Đặt Bàn 📅</h2>
-      <div className="reservation-form">
-        <div className="input-group">
-          <label>Tên khách hàng:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={handleNameChange}
-            placeholder="Nhập tên khách hàng"
-            required
-          />
-          {nameError && (
-            <p className="error-text">{nameError}</p>
-          )}
-        </div>
-        <div className="input-group">
-          <label>Số điện thoại:</label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={handlePhoneChange}
-            placeholder="Nhập số điện thoại"
-            required
-          />
-          {phoneError && (
-            <p className="error-text">{phoneError}</p>
-          )}
-        </div>
-        <div className="input-group">
-          <label>Ngày đặt:</label>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-        </div>
-        <div className="input-group">
-          <label>Giờ đặt:</label>
-          <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
-          <p className="note">Lưu ý: Quá 10 phút sẽ hủy thông tin đặt.</p>
-        </div>
-        <div className="input-group">
-          <label>Số lượng khách:</label>
-          <input
-            type="number"
-            value={guests}
-            onChange={(e) => setGuests(e.target.value)}
-            min="1"
-            required
-          />
-        </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "15px",
+          marginBottom: "20px",
+        }}
+      >
+        {["Tất cả", "Đang xử lý", "Hoàn thành"].map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilterStatus(status)}
+            style={{
+              padding: "8px 20px",
+              backgroundColor: filterStatus === status ? "#ff5722" : "#fff",
+              color: filterStatus === status ? "#fff" : "#333",
+              border: "1px solid #ddd",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "500",
+              transition: "background-color 0.3s",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = filterStatus === status ? "#e64a19" : "#f0f0f0")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = filterStatus === status ? "#ff5722" : "#fff")}
+          >
+            {status}
+          </button>
+        ))}
       </div>
-      <button className="submit-button" onClick={handleSubmit}>
-        Đặt Bàn
-      </button>
 
-      <style jsx>{`
-        .reservation-container {
-          max-width: 100vw;
-          overflow-x: hidden;
-          padding: 10px;
-        }
+      <div style={{ minWidth: "980px", backgroundColor: "#fff", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
+        <div
+          style={{
+            display: "flex",
+            backgroundColor: "#fafafa",
+            padding: "15px",
+            fontWeight: "600",
+            borderBottom: "1px solid #e0e0e0",
+            color: "#555",
+            fontSize: "14px",
+          }}
+        >
+          <div style={{ width: "100px", textAlign: "center" }}>Bàn</div>
+          <div style={{ width: "280px", textAlign: "left" }}>Món ăn</div>
+          <div style={{ width: "140px", textAlign: "center" }}>Thanh toán</div>
+          <div style={{ width: "150px", textAlign: "right" }}>Tổng tiền</div>
+          <div style={{ width: "160px", textAlign: "center" }}>Ngày đặt</div>
+          <div style={{ width: "100px", textAlign: "center" }}>Trạng thái</div>
+          <div style={{ width: "120px", textAlign: "center" }}>Hành động</div>
+        </div>
 
-        .title {
-          text-align: center;
-          color: #2c3e50;
-          margin-bottom: 15px;
-          font-size: 24px;
-        }
-
-        .reservation-form {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 15px;
-          padding: 20px;
-          background-color: #f8f9fa;
-          border-radius: 15px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          max-width: 400px;
-          margin: 0 auto;
-        }
-
-        .input-group {
-          margin-bottom: 10px;
-        }
-
-        input {
-          width: 100%;
-          padding: 12px;
-          border-radius: 8px;
-          border: 1px solid #d1d8e0;
-          background-color: #ffffff;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-          transition: border 0.3s;
-          color: #000;
-        }
-
-        input[type="date"],
-        input[type="time"] {
-          color: #000;
-        }
-
-        input:focus {
-          outline: none;
-          border: 1px solid #1e90ff;
-        }
-
-        .note {
-          color: #e74c3c;
-          font-weight: bold;
-          font-size: 13px;
-        }
-
-        .error-text {
-          color: #e74c3c;
-          font-size: 13px;
-        }
-
-        .submit-button {
-          width: 90%;
-          padding: 15px;
-          border-radius: 25px;
-          background-color: #1e90ff;
-          color: white;
-          border: none;
-          cursor: pointer;
-          margin: 20px auto;
-          display: block;
-          text-align: center;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .submit-button:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        @media (max-width: 480px) {
-          .reservation-form {
-            padding: 15px;
-          }
-
-          input {
-            padding: 10px;
-          }
-
-          .submit-button {
-            width: 100%;
-            padding: 12px;
-          }
-        }
-      `}</style>
+        {filteredOrders.length === 0 ? (
+          <p style={{ textAlign: "center", padding: "20px", color: "#666", fontSize: "14px" }}>
+            Không có đơn hàng nào!
+          </p>
+        ) : (
+          filteredOrders.map((order) => (
+            <div
+              key={order.orderID}
+              style={{
+                display: "flex",
+                padding: "15px",
+                borderBottom: "1px solid #e0e0e0",
+                alignItems: "center",
+                fontSize: "14px",
+                color: "#333",
+              }}
+            >
+              <div style={{ width: "100px", textAlign: "center" }}>{order.tableNumber}</div>
+              <div style={{ width: "280px" }}>
+                {order.items.map((item) => (
+                  <div key={item.productID} style={{ marginBottom: "5px" }}>
+                    {item.productName} x {item.quantity}
+                  </div>
+                ))}
+              </div>
+              <div style={{ width: "140px", textAlign: "center" }}>{order.paymentMethod}</div>
+              <div style={{ width: "150px", textAlign: "right" }}>
+                {order.totalAmount.toLocaleString("vi-VN")} VNĐ
+              </div>
+              <div style={{ width: "160px", textAlign: "center" }}>{order.orderDate}</div>
+              <div
+                style={{
+                  width: "100px",
+                  textAlign: "center",
+                  color: order.status === "Hoàn thành" ? "#4caf50" : "#f44336",
+                  fontWeight: "500",
+                }}
+              >
+                {order.status}
+              </div>
+              <div style={{ width: "120px", textAlign: "center" }}>
+                {order.status !== "Hoàn thành" && (
+                  <button
+                    onClick={() => updateOrderStatus(order.orderID, "Hoàn thành")}
+                    style={{
+                      padding: "6px 16px",
+                      backgroundColor: "#4caf50",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "13px",
+                      fontWeight: "500",
+                      transition: "background-color 0.3s",
+                    }}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = "#4caf50")}
+                  >
+                    Hoàn thành
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
 
-export default ReservationScreen;
+export default SellerOrderStatus;
