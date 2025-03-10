@@ -12,20 +12,41 @@ import AvatarButton from "./AvatarButton";
 import NotificationSign from "./NotificationSign";
 // SVG icons cho các loại thông báo (thay vì emoji)
 const SuccessIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52c41a" strokeWidth="2">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#52c41a"
+    strokeWidth="2"
+  >
     <path d="M20 6L9 17l-5-5" />
   </svg>
 );
 
 const InfoIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1890ff" strokeWidth="2">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#1890ff"
+    strokeWidth="2"
+  >
     <circle cx="12" cy="12" r="10" />
     <path d="M12 16v-4m0-4h.01" />
   </svg>
 );
 
 const WarningIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#faad14" strokeWidth="2">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#faad14"
+    strokeWidth="2"
+  >
     <path d="M12 2L2 20h20L12 2zm0 16v-2m0-4v-4" />
   </svg>
 );
@@ -35,61 +56,76 @@ const Header = () => {
   const { width } = ResponsiveScreen();
   const { userType } = UserProfile();
   const isMobile = width <= 768;
-// State để kiểm soát dropdown thông báo
-const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-const dropdownRef = useRef(null);
+  // State để kiểm soát dropdown thông báo
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-// State để quản lý danh sách thông báo
-const [notifications, setNotifications] = useState([
-  { id: 1, message: "Đơn hàng của bạn đã được xác nhận!", time: "5 phút trước", type: "success" },
-  { id: 2, message: "Khuyến mãi mới: Giảm 20% hôm nay!", time: "1 giờ trước", type: "info" },
-  { id: 3, message: "Bạn có một tin nhắn mới từ Tôm & Mít", time: "2 giờ trước", type: "warning" },
-]);
+  // State để quản lý danh sách thông báo
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      message: "Đơn hàng của bạn đã được xác nhận!",
+      time: "5 phút trước",
+      type: "success",
+    },
+    {
+      id: 2,
+      message: "Khuyến mãi mới: Giảm 20% hôm nay!",
+      time: "1 giờ trước",
+      type: "info",
+    },
+    {
+      id: 3,
+      message: "Bạn có một tin nhắn mới từ Tôm & Mít",
+      time: "2 giờ trước",
+      type: "warning",
+    },
+  ]);
 
-// Hàm toggle dropdown menu
-const toggleDropdown = () => {
-  console.log("Toggling dropdown, current state:", isDropdownOpen); // Debug
-  setIsDropdownOpen(!isDropdownOpen);
-};
+  // Hàm toggle dropdown menu
+  const toggleDropdown = () => {
+    console.log("Toggling dropdown, current state:", isDropdownOpen); // Debug
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
-// Đóng dropdown khi click bên ngoài
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsDropdownOpen(false);
+  // Đóng dropdown khi click bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  // Hàm xử lý khi nhấn nút "Đánh dấu đã đọc"
+  const handleMarkAsRead = (id) => {
+    console.log(`Đánh dấu thông báo ${id} là đã đọc`); // Debug
+    setNotifications(notifications.filter((noti) => noti.id !== id));
   };
 
-  if (isDropdownOpen) {
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-  } else {
-    document.removeEventListener("mousedown", handleClickOutside);
-    document.removeEventListener("touchstart", handleClickOutside);
-  }
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-    document.removeEventListener("touchstart", handleClickOutside);
+  // Hàm xử lý khi nhấn nút "Xóa"
+  const handleDelete = (id) => {
+    console.log(`Xóa thông báo ${id}`); // Debug
+    setNotifications(notifications.filter((noti) => noti.id !== id));
   };
-}, [isDropdownOpen]);
 
-// Hàm xử lý khi nhấn nút "Đánh dấu đã đọc"
-const handleMarkAsRead = (id) => {
-  console.log(`Đánh dấu thông báo ${id} là đã đọc`); // Debug
-  setNotifications(notifications.filter((noti) => noti.id !== id));
-};
+  // Debug userType và notifications
+  console.log("userType:", userType);
+  console.log("Notifications:", notifications);
 
-// Hàm xử lý khi nhấn nút "Xóa"
-const handleDelete = (id) => {
-  console.log(`Xóa thông báo ${id}`); // Debug
-  setNotifications(notifications.filter((noti) => noti.id !== id));
-};
-
-// Debug userType và notifications
-console.log("userType:", userType);
-console.log("Notifications:", notifications);
-  
   return (
     <div
       style={{
@@ -105,7 +141,7 @@ console.log("Notifications:", notifications);
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 10,
-        height: isMobile ? 80 : 100
+        height: isMobile ? 80 : 100,
       }}
     >
       <h1 style={{ margin: 0 }}>
@@ -115,13 +151,28 @@ console.log("Notifications:", notifications);
             cursor: "pointer",
           }}
         >
-          <img src={tommittitle} width={isMobile ? width/3 : width/2.5} alt="Tôm & Mít Restaurant"></img>
+          <img
+            src={tommittitle}
+            width={isMobile ? width / 3 : width / 2.5}
+            alt="Tôm & Mít Restaurant"
+          ></img>
         </a>
       </h1>
       <a href="tel:0862051226">
         <div>
-          <img src={phoneCall} height= {isMobile ?'50px': '80px'} style={{marginRight: 5}}></img>
-          <p style={{ display: "inline-block", fontSize: isMobile ? '12px' : '18px' }}>Gọi ngay</p>
+          <img
+            src={phoneCall}
+            height={isMobile ? "50px" : "80px"}
+            style={{ marginRight: 5 }}
+          ></img>
+          <p
+            style={{
+              display: "inline-block",
+              fontSize: isMobile ? "12px" : "18px",
+            }}
+          >
+            Gọi ngay
+          </p>
         </div>
       </a>
       {/* Thông báo & Avatar */}
@@ -152,7 +203,9 @@ console.log("Notifications:", notifications);
                 transition: "transform 0.2s",
                 filter: isDropdownOpen ? "brightness(0.8)" : "none",
               }}
-              onTouchStart={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
+              onTouchStart={(e) =>
+                (e.currentTarget.style.transform = "scale(0.95)")
+              }
               onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
             />
             <NotificationSign />
@@ -209,7 +262,9 @@ console.log("Notifications:", notifications);
                     padding: "0 5px",
                     transition: "color 0.2s",
                   }}
-                  onTouchStart={(e) => (e.currentTarget.style.color = "#ff4d4f")}
+                  onTouchStart={(e) =>
+                    (e.currentTarget.style.color = "#ff4d4f")
+                  }
                   onTouchEnd={(e) => (e.currentTarget.style.color = "#888")}
                 >
                   ✕
@@ -231,8 +286,12 @@ console.log("Notifications:", notifications);
                       backgroundColor: "#fff",
                       cursor: "pointer",
                     }}
-                    onTouchStart={(e) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
-                    onTouchEnd={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
+                    onTouchStart={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#f0f0f0")
+                    }
+                    onTouchEnd={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#fff")
+                    }
                   >
                     {/* Icon theo loại thông báo */}
                     <div
@@ -275,7 +334,13 @@ console.log("Notifications:", notifications);
                         {noti.time}
                       </small>
                     </div>
-                    <div className="noti-buttons" style={{ display: "flex", gap: isMobile ? "5px" : "10px" }}>
+                    <div
+                      className="noti-buttons"
+                      style={{
+                        display: "flex",
+                        gap: isMobile ? "5px" : "10px",
+                      }}
+                    >
                       <button
                         onClick={() => handleMarkAsRead(noti.id)}
                         style={{
@@ -290,8 +355,13 @@ console.log("Notifications:", notifications);
                           borderRadius: "50%",
                           transition: "background-color 0.2s",
                         }}
-                        onTouchStart={(e) => (e.currentTarget.style.backgroundColor = "#d9f7be")}
-                        onTouchEnd={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                        onTouchStart={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#d9f7be")
+                        }
+                        onTouchEnd={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
+                        }
                         title="Đánh dấu đã đọc"
                       >
                         <svg
@@ -319,8 +389,13 @@ console.log("Notifications:", notifications);
                           borderRadius: "50%",
                           transition: "background-color 0.2s",
                         }}
-                        onTouchStart={(e) => (e.currentTarget.style.backgroundColor = "#ffccc7")}
-                        onTouchEnd={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                        onTouchStart={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#ffccc7")
+                        }
+                        onTouchEnd={(e) =>
+                          (e.currentTarget.style.backgroundColor =
+                            "transparent")
+                        }
                         title="Xóa"
                       >
                         <svg
@@ -356,7 +431,7 @@ console.log("Notifications:", notifications);
           )}
         </div>
       )}
-          <AvatarButton></AvatarButton>
+      <AvatarButton></AvatarButton>
     </div>
   );
 };
