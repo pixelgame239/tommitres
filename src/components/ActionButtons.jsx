@@ -25,15 +25,23 @@ const ActionButtons = () => {
               onClick={() => navigate('/tommitres/Order')}
             >
               Order
-            </Button>
-            <Button variant="warning" className="px-4 py-2">
-              Trạng thái đơn hàng
-            </Button>
-          </>
-        ) : userType.startsWith('C') ? (
-          <Button variant="info" className="px-4 py-2">
-            Đơn đang chờ
+              </Button>
+          <Button
+            variant="warning"
+            className="px-4 py-2"
+            onClick={() => navigate("/tommitres/OrderStatus")} 
+          >
+            Trạng thái đơn hàng
           </Button>
+          </>
+      ) : userType.startsWith("C") ? (
+        <Button
+          variant="info"
+          className="px-4 py-2"
+          onClick={() => navigate("/tommitres/ChefOrders")} 
+        >
+          Đơn đang chờ
+        </Button>
         ) : (
           <Button
             variant="warning"
