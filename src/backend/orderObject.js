@@ -1,4 +1,4 @@
-import { collection, addDoc, query, orderBy, getDocs, doc, where, getDoc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, query, orderBy, getDocs, doc, where, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "./firebase.js";
 
 export class Order {
@@ -27,7 +27,7 @@ export class Order {
             console.error("Error getting or updating document:", error);
         }
     }
-    addProduct(productID, orderQuantity, unitPrice) {
+    addProduct(productID, productName, orderQuantity, unitPrice, imageLink) {
       const existingProduct = this.products.find(product=>product.productID===productID);
       if(existingProduct){
         existingProduct.orderQuantity = orderQuantity;
@@ -39,10 +39,27 @@ export class Order {
       else{
         console.log(orderQuantity);
         const singleProductPrice = orderQuantity * unitPrice;
-        this.products.push({ productID, orderQuantity, unitPrice, singleProductPrice });
+        this.products.push({ productID, productName, orderQuantity, unitPrice, singleProductPrice, imageLink });
       }
     }
     calculateTotalPrice() {
       this.totalPrice = this.products.reduce((acc, product) => acc + product.singleProductPrice, 0);
     }
   }
+export async function createOrder(currentOrder){
+  const orderRef = await addDoc(collection(db, "Order"),{
+    orderID: currentOrder.orderID,
+    timeCreated: Timestamp.now(),
+    timeFinished: null,
+    userName: null,
+    tableNumber: currentOrder.tableNumber,
+    paymentMethod: currentOrder.paymentMethod==="cash"?"Tiền mặt":"Chuyển khoản",
+    totalPrice: currentOrder.totalPrice,
+    products: currentOrder.products.map(product=>({
+      productID: product.productID,
+      orderQuantity: product.orderQuantity,
+      unitPrice: product.unitPrice,
+      singleProductPrice: product.singleProductPrice
+    }))
+  });
+}
