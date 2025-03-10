@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
+// Import ảnh local vào component
+import doAn from "../assets/do-an.jpg";
+
 const FoodItem = ({ productName, unitPrice, description }) => {
   const [quantity, setQuantity] = useState(0);
 
@@ -14,6 +17,16 @@ const FoodItem = ({ productName, unitPrice, description }) => {
         borderRadius: 10,
       }}
     >
+      {/* Hiển thị ảnh với kích thước giảm */}
+      <img
+        src={doAn} // Sử dụng ảnh đã được import
+        alt={productName}
+        style={{
+          width: "200px", // Đặt chiều rộng ảnh là 200px
+          height: "auto", // Chiều cao tự động thay đổi để giữ tỷ lệ
+          borderRadius: 10,
+        }}
+      />
       <p>
         <strong>{productName}</strong>
       </p>
@@ -38,7 +51,6 @@ const FoodItem = ({ productName, unitPrice, description }) => {
   );
 };
 
-// 🚀 Kiểm tra kiểu dữ liệu của props
 FoodItem.propTypes = {
   productName: PropTypes.string.isRequired,
   unitPrice: PropTypes.number.isRequired,
