@@ -19,6 +19,7 @@ const AvatarButton = () => {
   const [sender, setSender] = useState("");
   const [type, setType] = useState("");
   const [message, setMessage] = useState("");
+  const [receiver, setReceiver] = useState("");
 
   useEffect(() => {
     console.log("UserProfile returned:", userType);
@@ -44,15 +45,15 @@ const AvatarButton = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!sender) {
-      alert("Lỗi: Không tìm thấy tên người gửi!");
-      console.error("Sender is undefined!");
+    if (!sender || !receiver) {
+      alert("Lỗi: Vui lòng nhập đầy đủ thông tin người gửi và người nhận!");
       return;
     }
     try {
-      await addNotification(sender, type, message);
+      await addNotification(sender, receiver, type, message);
       alert("Thông báo đã được gửi!");
       setShowModal(false);
+      setReceiver(""); // Xóa dữ liệu sau khi gửi thành công
       setType("");
       setMessage("");
     } catch (error) {
@@ -107,16 +108,28 @@ const AvatarButton = () => {
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Sender</Form.Label>
+              <Form.Label>Người gửi</Form.Label>
               <Form.Control type="text" value={sender} readOnly />
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Message</Form.Label>
+              <Form.Label>Người nhận</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Nhập tên người nhận"
+                value={receiver}
+                onChange={(e) => setReceiver(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Nội dung</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder="Nhập nội dung"
+                placeholder="Mật khẩu cũ: 
+Mật khẩu mới: "
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 required
