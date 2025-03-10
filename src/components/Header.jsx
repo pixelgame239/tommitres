@@ -6,12 +6,10 @@ import tommittitle from "../assets/title.png";
 import phoneCall from "../assets/call.png";
 import ResponsiveScreen from "../styles/responsiveScreen";
 import UserProfile from "../backend/userProfile";
-import staffAvt from "../assets/staffAvt.png";
-import manAvt from "../assets/managerAvt.png";
-import chefAvt from "../assets/chefAvt.png";
 import "../styles/avatarStyle.css";
 import notiIcon from "../assets/notificationIcon.png";
 import AvatarButton from "./AvatarButton";
+import NotificationSign from "./NotificationSign";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -55,6 +53,7 @@ const Header = () => {
         {userType===null||userType===undefined?null
         : <div className="noti-icon-container">
         <img src={notiIcon} className="noti-icon"></img>
+        <NotificationSign></NotificationSign>
       </div>} 
           <AvatarButton></AvatarButton>
     </div>

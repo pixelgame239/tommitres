@@ -5,7 +5,7 @@ import FoodItem from "../components/FoodItem";
 import fetchProduct from "../backend/fetchProduct"; // Hàm fetch dữ liệu từ bảng Product
 import YourOrder from "./YourOrder";
 
-const OnlineTakeAway = () => {
+const OrderScreen = ({ tableID }) => {
   const [foodData, setFoodData] = useState([]);
   const [drinkData, setDrinkData] = useState([]);
   const navigate = useNavigate(); // Hook điều hướng
@@ -35,6 +35,7 @@ const OnlineTakeAway = () => {
 
   return (
     <div style={{ height: "100vh", overflowY: "auto", padding: 20 }}>
+      <h2 style={{textAlign:"center"}}>{tableID?`Bàn ${tableID}`:null}</h2>
       <h2>Đồ ăn 🍕</h2>
       <div
         style={{
@@ -89,4 +90,4 @@ const OnlineTakeAway = () => {
   );
 };
 
-export default OnlineTakeAway;
+export default OrderScreen;
