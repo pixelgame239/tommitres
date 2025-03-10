@@ -10,9 +10,9 @@ import Home from "../pages/Home";
 import Order from "../pages/Order"
 import OrderScreen from "../pages/OrderScreen";
 import ReservationScreen from "../pages/ReservationScreen";
-import DetailedRevenueScreen from "../pages/DetailedRevenueScreen";
+import OrderStatusScreen from "../pages/OrderStatusScreen";
+import ChefOrderScreen from "../pages/ChefOrderScreen";
 import YourOrder from "../pages/YourOrder"; // Import file mới
-
 const AppRoutes = () => {
   return (
     <Routes>
@@ -21,7 +21,8 @@ const AppRoutes = () => {
       <Route path="/tommitres/Reservation" element={<ReservationScreen />} />
       <Route path ="/tommitres/Order" element={<Order />}/>
       <Route path ="/tommitres/Order/Takeaway" element={<OrderScreen />}/>
-      <Route path="/tommitres/DetailedRevenue" element={<DetailedRevenueScreen />} />
+      <Route path="/tommitres/OrderStatus" element={<OrderStatusScreen />} />
+      <Route path="/tommitres/ChefOrders" element={<ChefOrderScreen />} />
       <Route path="/tommitres/Order/Table1" element = {<OrderScreen tableID={1}></OrderScreen>}></Route>
       <Route path="/tommitres/Order/Table2" element = {<OrderScreen tableID={2}></OrderScreen>}></Route>
       <Route path="/tommitres/Order/Table3" element = {<OrderScreen tableID={3}></OrderScreen>}></Route>
