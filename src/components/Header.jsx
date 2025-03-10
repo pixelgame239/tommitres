@@ -77,6 +77,7 @@ useEffect(() => {
 // Hàm xử lý khi nhấn nút "Đánh dấu đã đọc"
 const handleMarkAsRead = (id) => {
   console.log(`Đánh dấu thông báo ${id} là đã đọc`); // Debug
+  setNotifications(notifications.filter((noti) => noti.id !== id));
 };
 
 // Hàm xử lý khi nhấn nút "Xóa"
@@ -281,8 +282,8 @@ console.log("Notifications:", notifications);
                           border: "none",
                           background: "none",
                           cursor: "pointer",
-                          width: isMobile ? "32px" : "36px",
-                          height: isMobile ? "32px" : "36px",
+                          width: isMobile ? "50px" : "60px",
+                          height: isMobile ? "50px" : "10px",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -310,8 +311,8 @@ console.log("Notifications:", notifications);
                           border: "none",
                           background: "none",
                           cursor: "pointer",
-                          width: isMobile ? "32px" : "36px",
-                          height: isMobile ? "32px" : "36px",
+                          width: isMobile ? "50px" : "60px",
+                          height: isMobile ? "50px" : "10px",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
