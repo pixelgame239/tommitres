@@ -6,7 +6,7 @@ import fetchProduct from "../backend/fetchProduct"; // Hàm fetch dữ liệu t�
 
 import myImage from "../assets/call.png";
 
-const OnlineTakeAway = () => {
+const OrderScreen = ({ tableID }) => {
   const [foodData, setFoodData] = useState([]);
   const [drinkData, setDrinkData] = useState([]);
   const navigate = useNavigate(); // Hook điều hướng
@@ -35,6 +35,7 @@ const OnlineTakeAway = () => {
 
   return (
     <div style={{ overflow: "auto", padding: 10 }}>
+      <h2 style={{textAlign:"center"}}>{tableID?`Bàn ${tableID}`:null}</h2>
       <h2>Đồ ăn 🍕</h2>
       <div
         style={{
@@ -94,4 +95,4 @@ const OnlineTakeAway = () => {
   );
 };
 
-export default OnlineTakeAway;
+export default OrderScreen;
