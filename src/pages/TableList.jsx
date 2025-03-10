@@ -31,7 +31,7 @@ const TableList = () =>{
         )
     }
     return(
-        <div>
+        <div style={{textAlign:"center"}}>
             <OnlineOrderButton></OnlineOrderButton>
             {tableData.map((table, index) => (
                 <Tables key={index} tableID={table.tableID} isOccupied={table.isOccupied} />
