@@ -10,9 +10,11 @@ import Home from "../pages/Home";
 import Order from "../pages/Order";
 import OrderScreen from "../pages/OrderScreen";
 import ReservationScreen from "../pages/ReservationScreen";
-import DetailedRevenueScreen from "../pages/DetailedRevenueScreen";
+import OrderStatusScreen from "../pages/OrderStatusScreen";
+import ChefOrderScreen from "../pages/ChefOrderScreen";
 import YourOrder from "../pages/YourOrder"; // Import file mới
 import AccountScreen from "../pages/manageAccount";
+import RevenueExcelLikeScreen from "../pages/DetailedRevenueScreen";
 
 const AppRoutes = () => {
   return (
@@ -24,7 +26,7 @@ const AppRoutes = () => {
       <Route path="/tommitres/Order/Takeaway" element={<OrderScreen />} />
       <Route
         path="/tommitres/DetailedRevenue"
-        element={<DetailedRevenueScreen />}
+        element={<RevenueExcelLikeScreen />}
       />
       <Route path="/tommitres/manageAccount" element={<AccountScreen />} />
 

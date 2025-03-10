@@ -1,4 +1,4 @@
-import { collection, addDoc, query, orderBy, getDocs, doc, where, getDoc, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, where, updateDoc } from "firebase/firestore";
 import { db } from "./firebase.js";
 
 export class Table{

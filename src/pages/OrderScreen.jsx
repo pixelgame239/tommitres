@@ -3,23 +3,40 @@ import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
 import FoodItem from "../components/FoodItem";
 import fetchProduct from "../backend/fetchProduct"; // Hàm fetch dữ liệu từ bảng Product
-
-import myImage from "../assets/call.png";
+import { Product } from "../backend/productObject";
+import { Order } from "../backend/orderObject";
 
 const OrderScreen = ({ tableID }) => {
   const [foodData, setFoodData] = useState([]);
   const [drinkData, setDrinkData] = useState([]);
-  const navigate = useNavigate(); // Hook điều hướng
+  const navigate = useNavigate(); 
+  const handleNavPayment = () => {
+    navigate("/tommitres/yourorder", {state: { currentOrders }});
+  };
+  const currentOrders = new Order();
+  const handlecreateOrder= async (productID, orderQuantity, unitPrice)=>{
+    if(currentOrders.orderID===undefined){
+      await currentOrders.getOrderID();
+    }
+    currentOrders.addProduct(productID, orderQuantity, unitPrice);
+    currentOrders.calculateTotalPrice();
+    if(tableID===null||tableID===undefined){
+      currentOrders.tableNumber = "Mang đi";
+    }
+    else{
+      currentOrders.tableNumber = `Bàn ${tableID}`;
+    }
+    console.log(JSON.stringify(currentOrders,null,2));
+  }
 
   useEffect(() => {
     const getProducts = async () => {
       try {
-        const products = await fetchProduct(); // Gọi API lấy dữ liệu
-
-        // Phân loại sản phẩm theo category
+        const fetchproducts = await fetchProduct(); // Gọi API lấy dữ liệu
+        const objectproducts = new Product();
+        const products = objectproducts.getProduct(fetchproducts);
         const food = products.filter((item) => item.category === "Food");
         const drinks = products.filter((item) => item.category === "Drink");
-
         setFoodData(food);
         setDrinkData(drinks);
       } catch (error) {
@@ -50,9 +67,12 @@ const OrderScreen = ({ tableID }) => {
         {foodData.map((item) => (
           <FoodItem
             key={item.productID}
+            productID={item.productID}
             productName={item.productName}
             unitPrice={item.unitPrice}
             description={item.description}
+            quantity = {item.quantity}
+            handlecreateOrder = {handlecreateOrder}
           />
         ))}
       </div>
@@ -72,16 +92,27 @@ const OrderScreen = ({ tableID }) => {
         {drinkData.map((item) => (
           <FoodItem
             key={item.productID}
+            productID={item.productID}
             productName={item.productName}
             unitPrice={item.unitPrice}
             description={item.description}
-            image={myImage} // Đảm bảo ảnh nằm trong thư mục public/images
+            quantity = {item.quantity}
+            handlecreateOrder = {handlecreateOrder}
           />
         ))}
       </div>
 
       <button
-        onClick={() => navigate("/tommitres/yourorder")}
+        onClick={() => 
+          {
+            if(currentOrders.products.length<=0){
+              alert("Vui lòng đặt ít nhất 1 món ăn hoặc đồ uống")
+            }
+            else{
+              handleNavPayment();
+            }
+          }
+        }
         style={{
           position: "fixed",
           bottom: 20,
