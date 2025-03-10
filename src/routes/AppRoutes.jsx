@@ -15,7 +15,7 @@ import ChefOrderScreen from "../pages/ChefOrderScreen";
 import YourOrder from "../pages/YourOrder"; // Import file mới
 import AccountScreen from "../pages/manageAccount";
 import RevenueExcelLikeScreen from "../pages/DetailedRevenueScreen";
-
+import InvoiceForm from "../pages/InvoiceForm";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -29,6 +29,9 @@ const AppRoutes = () => {
         element={<RevenueExcelLikeScreen />}
       />
       <Route path="/tommitres/manageAccount" element={<AccountScreen />} />
+
+      <Route path="/tommitres/Invoice" element={<InvoiceForm />} />
+
 
       <Route
         path="/tommitres/Order/Table1"
