@@ -13,9 +13,8 @@ import traSuaNuong from "../assets/tra-sua-nuong.png";
 import traThaiXanh from "../assets/tra-thai-xanh.png";
 import tranChauDuongDen from "../assets/tran-chau-duong-den.png";
 
-const FoodItem = ({ productName, unitPrice, description }) => {
-  const [quantity, setQuantity] = useState(0);
-
+const FoodItem = ({ productID, productName, unitPrice, description, quantity, handlecreateOrder }) => {
+  const [orderQuantity, setorderQuantity] = useState(0);
   // Chọn ảnh dựa vào productName
   let productImage;
   if (productName === "Đùi gà rán") {
@@ -76,19 +75,25 @@ const FoodItem = ({ productName, unitPrice, description }) => {
       {/* Tăng kích thước chữ cho giá */}
       <p style={{ fontSize: "1.2rem" }}>Giá: {unitPrice.toLocaleString()}đ</p>
       <div>
-        {/* Tăng kích thước chữ cho button */}
-        <button
+        {quantity===0?
+        (<p style={{fontSize:20, color:"red", textAlign:"center"}}>Hết hàng</p>)
+        : (<><button
           style={{
             marginRight: 10,
             backgroundColor: "lightblue",
             padding: 10,
             fontSize: "1.2rem",
           }}
-          onClick={() => setQuantity(Math.max(quantity - 1, 0))}
+          onClick={async () => {
+            const decreasedQuantity =Math.max(orderQuantity - 1, 0);
+            setorderQuantity(decreasedQuantity);
+            await handlecreateOrder(productID, decreasedQuantity, unitPrice);
+          }
+          }
         >
           ➖
         </button>
-        <strong style={{ fontSize: "1.5rem" }}>{quantity}</strong>
+        <strong style={{ fontSize: "1.5rem" }}>{orderQuantity}</strong>
         <button
           style={{
             marginLeft: 10,
@@ -96,10 +101,19 @@ const FoodItem = ({ productName, unitPrice, description }) => {
             padding: 10,
             fontSize: "1.2rem",
           }}
-          onClick={() => setQuantity(quantity + 1)}
+          onClick={ async () => 
+            {
+              const increaseQuantity = orderQuantity+1;
+              setorderQuantity(increaseQuantity);
+              await handlecreateOrder(productID, increaseQuantity, unitPrice);
+            }
+          }
+          disabled={orderQuantity===quantity}
         >
           ➕
         </button>
+        </>)
+      }
       </div>
     </div>
   );
@@ -109,6 +123,7 @@ FoodItem.propTypes = {
   productName: PropTypes.string.isRequired,
   unitPrice: PropTypes.number.isRequired,
   description: PropTypes.string,
+  quantity: PropTypes.number,
 };
 
 export default FoodItem;

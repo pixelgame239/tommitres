@@ -1,4 +1,15 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+import doAn from "../assets/do-an.jpg";
+import duiGaRan from "../assets/dui-ga-ran.png";
+import canhGaRan from "../assets/canh-ga-ran.png";
+import canhGaSotCay from "../assets/canh-ga-sot-cay.png";
+import duiGaSotCay from "../assets/dui-ga-sot-cay.png";
+import kimChi from "../assets/kim-chi.png";
+import traSuaKhoaiMon from "../assets/tra-sua-khoai-mon.png";
+import traSuaNuong from "../assets/tra-sua-nuong.png";
+import traThaiXanh from "../assets/tra-thai-xanh.png";
+import tranChauDuongDen from "../assets/tran-chau-duong-den.png";
 
 // Dummy data với thêm thuộc tính imageUrl
 const initialCart = [
@@ -19,37 +30,20 @@ const initialCart = [
 ];
 
 const YourOrder = () => {
-  const [cartItems, setCartItems] = useState(initialCart);
-  const [paymentMethod, setPaymentMethod] = useState(""); // State để lưu phương thức thanh toán
+  const location = useLocation();
+  const { currentOrders } = location.state || {};
+  const [cartItems, setCartItems] = useState(currentOrders.products);
+  console.log(currentOrders.products);
+  const [paymentMethod, setPaymentMethod] = useState("cash"); // State để lưu phương thức thanh toán
   const [showDetails, setShowDetails] = useState(false); // State để hiển thị/ẩn chi tiết tổng cộng
   const [showPaymentMethods, setShowPaymentMethods] = useState(false); // State để hiển thị/ẩn phương thức thanh toán
 
-  // Hàm tăng/giảm số lượng
-  const updateQuantity = (id, change) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.productID === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
-  };
-
-  // Tính tổng tiền
-  const calculateTotal = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.unitPrice * item.quantity,
-      0
-    );
-  };
-
-  // Xử lý đặt hàng
   const handlePlaceOrder = () => {
     if (!paymentMethod) {
       alert("Vui lòng chọn phương thức thanh toán!");
       return;
     }
-    alert(`Đơn hàng của bạn đã được đặt thành công! Phương thức thanh toán: ${paymentMethod === "cash" ? "Tiền mặt" : "Chuyển khoản"}`);
+    alert("Yêu cầu thanh toán của bạn đã được gửi. Vui lòng đợi nhân viên bàn trong giây lát");
   };
 
   // Hàm toggle hiển thị chi tiết tổng cộng
@@ -154,47 +148,6 @@ const YourOrder = () => {
                   </p>
                 </div>
               </div>
-
-              {/* Điều chỉnh số lượng */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  minWidth: "100px",
-                }}
-              >
-                <button
-                  onClick={() => updateQuantity(item.productID, -1)}
-                  style={{
-                    padding: "5px 10px",
-                    backgroundColor: "#f0f0f0",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                  }}
-                >
-                  -
-                </button>
-                <span style={{ fontSize: "clamp(14px, 3vw, 16px)" }}>
-                  {item.quantity}
-                </span>
-                <button
-                  onClick={() => updateQuantity(item.productID, 1)}
-                  style={{
-                    padding: "5px 10px",
-                    backgroundColor: "#f0f0f0",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                  }}
-                >
-                  +
-                </button>
-              </div>
-
               {/* Tổng giá của món */}
               <div
                 style={{
@@ -209,7 +162,7 @@ const YourOrder = () => {
                     fontSize: "clamp(14px, 3vw, 16px)",
                   }}
                 >
-                  {(item.unitPrice * item.quantity).toLocaleString("vi-VN")} VNĐ
+                  {(item.singleProductPrice).toLocaleString("vi-VN")} VNĐ
                 </p>
               </div>
             </div>
@@ -251,7 +204,7 @@ const YourOrder = () => {
               color: "#ff5722",
             }}
           >
-            {calculateTotal().toLocaleString("vi-VN")} VNĐ
+            {currentOrders.totalPrice.toLocaleString("vi-VN")} VNĐ
           </p>
         </div>
 
@@ -285,7 +238,7 @@ const YourOrder = () => {
                   }}
                 >
                   <span>
-                    {item.productName} (x{item.quantity})
+                    {item.productName} (x{item.orderQuantity})
                   </span>
                   <span>
                     {(item.unitPrice * item.quantity).toLocaleString("vi-VN")} VNĐ
@@ -319,7 +272,7 @@ const YourOrder = () => {
                   fontSize: "clamp(14px, 3.5vw, 16px)",
                 }}
               >
-                {calculateTotal().toLocaleString("vi-VN")} VNĐ
+                {currentOrders.totalPrice.toLocaleString("vi-VN")} VNĐ
               </p>
             </div>
           </div>
