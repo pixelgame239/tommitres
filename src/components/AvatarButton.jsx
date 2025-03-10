@@ -8,60 +8,72 @@ import manAvt from "../assets/managerAvt.png";
 import chefAvt from "../assets/chefAvt.png";
 import "../styles/avatarStyle.css";
 
-const AvatarButton = () =>{
-    const navigate = useNavigate();
-    const { width } = ResponsiveScreen();
-    const { userType } = UserProfile();
-    const isMobile = width <= 768;
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const AvatarButton = () => {
+  const navigate = useNavigate();
+  const { width } = ResponsiveScreen();
+  const { userType } = UserProfile();
+  const isMobile = width <= 768;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(prevState => !prevState);
-    };
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prevState) => !prevState);
+  };
 
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate('/tommitres');
-        window.location.reload(); 
-    };
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/tommitres");
+    window.location.reload();
+  };
 
-    const handleRequest = () => {
-        // Implement your settings logic here
-        console.log("Go to settings");
-    };
-    if(userType===null||userType===undefined){
-        return  <Button variant="primary" style = {{fontSize: isMobile ? '12px' : '18px'}} onClick={()=>navigate('/tommitres/Login')}>
+  const handleRequest = () => {
+    // Implement your settings logic here
+    console.log("Go to settings");
+  };
+  if (userType === null || userType === undefined) {
+    return (
+      <Button
+        variant="primary"
+        style={{ fontSize: isMobile ? "12px" : "18px" }}
+        onClick={() => navigate("/tommitres/Login")}
+      >
         Đăng nhập
       </Button>
-    }
-    else if(userType.startsWith("ST")||userType.startsWith('C')){
-        return <div className="user-avatar-container" onClick={toggleDropdown} ><img className="user-avatar" src= {userType.startsWith("ST")?staffAvt:chefAvt}></img>
-        {isDropdownOpen?<div className="dropdown-menu">
+    );
+  } else if (userType.startsWith("ST") || userType.startsWith("C")) {
+    return (
+      <div className="user-avatar-container" onClick={toggleDropdown}>
+        <img
+          className="user-avatar"
+          src={userType.startsWith("ST") ? staffAvt : chefAvt}
+        ></img>
+        {isDropdownOpen ? (
+          <div className="dropdown-menu">
             <button className="dropdown-item" onClick={handleRequest}>
-                Yêu cầu đổi mật khẩu
+              Yêu cầu đổi mật khẩu
             </button>
             <button className="dropdown-item" onClick={handleLogout}>
-                Đăng xuất
+              Đăng xuất
             </button>
-        </div>
-        :null}
-        </div>
-    }
-    else{
-        return <div  className="user-avatar-container" onClick={toggleDropdown}><img src={manAvt} className="user-avatar"></img>
-        {isDropdownOpen?<div className="dropdown-menu">
-            <button className="dropdown-item">
-                Xem tài khoản
-            </button>
+          </div>
+        ) : null}
+      </div>
+    );
+  } else {
+    return (
+      <div className="user-avatar-container" onClick={toggleDropdown}>
+        <img src={manAvt} className="user-avatar"></img>
+        {isDropdownOpen ? (
+          <div className="dropdown-menu">
             <button className="dropdown-item" onClick={handleRequest}>
-                Đổi mật khẩu
+              Đổi mật khẩu
             </button>
             <button className="dropdown-item" onClick={handleLogout}>
-                Đăng xuất
+              Đăng xuất
             </button>
-        </div>
-        :null}
-        </div>
-    }
-}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+};
 export default AvatarButton;
