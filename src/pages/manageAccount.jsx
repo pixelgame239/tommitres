@@ -94,6 +94,19 @@ const AccountScreen = () => {
       alert(response);
 
       if (response.includes("thành công")) {
+        // Cập nhật lại danh sách tài khoản ngay lập tức
+        const updateAccounts = (accounts) =>
+          accounts.map((acc) =>
+            acc.id === selectedAccount.id
+              ? { ...acc, password: newPassword }
+              : acc
+          );
+
+        setStAccounts(updateAccounts(stAccounts));
+        setMAccounts(updateAccounts(mAccounts));
+        setCAccounts(updateAccounts(cAccounts));
+
+        // Đóng dialog và reset input
         setShowDialog(false);
         setCurrentPassword("");
         setNewPassword("");
@@ -131,7 +144,7 @@ const AccountScreen = () => {
         >
           <thead>
             <tr style={{ backgroundColor: "#f2f2f2" }}>
-              <th style={{ padding: "12px" }}>Username</th>
+              <th style={{ padding: "12px" }}>Tên đăng nhập</th>
               <th style={{ padding: "12px" }}>Mật khẩu</th>
               <th style={{ padding: "12px" }}>Hành động</th>
             </tr>

@@ -44,7 +44,7 @@ const ActionButtons = () => {
           className="px-4 py-2"
           onClick={() => navigate("/tommitres/manageAccount")}
         >
-          Manage accounts
+          Quản lý tài khoản
         </Button>
         <Button
           variant="warning"
