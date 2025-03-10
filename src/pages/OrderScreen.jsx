@@ -11,7 +11,6 @@ const OrderScreen = ({ tableID }) => {
   const [drinkData, setDrinkData] = useState([]);
   const navigate = useNavigate(); // Hook điều hướng
 
-
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -43,7 +42,9 @@ const OrderScreen = ({ tableID }) => {
           gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
           gap: 10,
           justifyItems: "center",
-          alignItems: "center",
+          alignItems: "stretch", // Căn tất cả items cho cùng chiều cao
+          minHeight: "300px",
+          paddingBottom: "160px",
         }}
       >
         {foodData.map((item) => (
@@ -63,7 +64,9 @@ const OrderScreen = ({ tableID }) => {
           gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
           gap: 10,
           justifyItems: "center",
-          alignItems: "center",
+          alignItems: "stretch", // Căn tất cả items cho cùng chiều cao
+          minHeight: "300px",
+          paddingBottom: "60px",
         }}
       >
         {drinkData.map((item) => (
@@ -78,7 +81,7 @@ const OrderScreen = ({ tableID }) => {
       </div>
 
       <button
-      onClick={() => navigate("/tommitres/yourorder")}
+        onClick={() => navigate("/tommitres/yourorder")}
         style={{
           position: "fixed",
           bottom: 20,
