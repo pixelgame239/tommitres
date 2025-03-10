@@ -87,7 +87,7 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
           onClick={async () => {
             const decreasedQuantity =Math.max(orderQuantity - 1, 0);
             setorderQuantity(decreasedQuantity);
-            await handlecreateOrder(productID, decreasedQuantity, unitPrice);
+            await handlecreateOrder(productID, productName, decreasedQuantity, unitPrice, productImage);
           }
           }
         >
@@ -105,7 +105,7 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
             {
               const increaseQuantity = orderQuantity+1;
               setorderQuantity(increaseQuantity);
-              await handlecreateOrder(productID, increaseQuantity, unitPrice);
+              await handlecreateOrder(productID, productName, increaseQuantity, unitPrice, productImage);
             }
           }
           disabled={orderQuantity===quantity}

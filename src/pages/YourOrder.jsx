@@ -1,33 +1,8 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import doAn from "../assets/do-an.jpg";
-import duiGaRan from "../assets/dui-ga-ran.png";
-import canhGaRan from "../assets/canh-ga-ran.png";
-import canhGaSotCay from "../assets/canh-ga-sot-cay.png";
-import duiGaSotCay from "../assets/dui-ga-sot-cay.png";
-import kimChi from "../assets/kim-chi.png";
-import traSuaKhoaiMon from "../assets/tra-sua-khoai-mon.png";
-import traSuaNuong from "../assets/tra-sua-nuong.png";
-import traThaiXanh from "../assets/tra-thai-xanh.png";
-import tranChauDuongDen from "../assets/tran-chau-duong-den.png";
-
-// Dummy data với thêm thuộc tính imageUrl
-const initialCart = [
-  { 
-    productID: 1, 
-    productName: "Pizza Margherita", 
-    unitPrice: 150000, 
-    quantity: 2, 
-    imageUrl: "https://via.placeholder.com/50" // Thay bằng URL thật
-  },
-  { 
-    productID: 2, 
-    productName: "Trà Sữa Trân Châu", 
-    unitPrice: 45000, 
-    quantity: 1, 
-    imageUrl: "https://via.placeholder.com/50" // Thay bằng URL thật
-  },
-];
+import { db } from "../backend/firebase.js";
+import { doc, updateDoc, query, collection, where, getDocs } from "firebase/firestore";
+import { createOrder } from "../backend/orderObject.js";
 
 const YourOrder = () => {
   const location = useLocation();
@@ -38,11 +13,34 @@ const YourOrder = () => {
   const [showDetails, setShowDetails] = useState(false); // State để hiển thị/ẩn chi tiết tổng cộng
   const [showPaymentMethods, setShowPaymentMethods] = useState(false); // State để hiển thị/ẩn phương thức thanh toán
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!paymentMethod) {
       alert("Vui lòng chọn phương thức thanh toán!");
       return;
     }
+    for (let changeProduct of cartItems){
+      const productQuery = query(
+        collection(db, "Product"),where("productID", "==", changeProduct.productID)
+      );
+      try{
+        const querySnapshot = await getDocs(productQuery);
+        for(const returnData of querySnapshot.docs){
+          if(returnData.exists()){
+            const currentQuantity = returnData.data().quantity;
+            const updatedQuantity = currentQuantity - changeProduct.orderQuantity;
+            const productRef = doc(db, "Product", returnData.id);
+            await updateDoc(productRef, {
+              quantity: updatedQuantity
+            })
+          }
+        }
+      }
+      catch(error) {
+        console.error(error);
+      }
+    }
+    currentOrders.paymentMethod = paymentMethod;
+    createOrder(currentOrders);
     alert("Yêu cầu thanh toán của bạn đã được gửi. Vui lòng đợi nhân viên bàn trong giây lát");
   };
 
@@ -118,7 +116,7 @@ const YourOrder = () => {
                 }}
               >
                 <img
-                  src={item.imageUrl}
+                  src={item.imageLink}
                   alt={item.productName}
                   style={{
                     width: "40px", // Giảm kích thước ảnh trên mobile
@@ -241,7 +239,7 @@ const YourOrder = () => {
                     {item.productName} (x{item.orderQuantity})
                   </span>
                   <span>
-                    {(item.unitPrice * item.quantity).toLocaleString("vi-VN")} VNĐ
+                    {item.singleProductPrice.toLocaleString("vi-VN")} VNĐ
                   </span>
                 </li>
               ))}

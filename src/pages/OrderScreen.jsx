@@ -14,11 +14,11 @@ const OrderScreen = ({ tableID }) => {
     navigate("/tommitres/yourorder", {state: { currentOrders }});
   };
   const currentOrders = new Order();
-  const handlecreateOrder= async (productID, orderQuantity, unitPrice)=>{
+  const handlecreateOrder= async (productID, productName, orderQuantity, unitPrice, imageLink)=>{
     if(currentOrders.orderID===undefined){
       await currentOrders.getOrderID();
     }
-    currentOrders.addProduct(productID, orderQuantity, unitPrice);
+    currentOrders.addProduct(productID, productName, orderQuantity, unitPrice, imageLink);
     currentOrders.calculateTotalPrice();
     if(tableID===null||tableID===undefined){
       currentOrders.tableNumber = "Mang đi";
