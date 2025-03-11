@@ -7,8 +7,7 @@ const Invoice = () => {
     invoiceNumber: "080215",
     orderCode: "#5RU20",
     date: "08/03/2025",
-    timeIn: "15:02",
-    timeOut: "15:02",
+    status: "finished",
     cashier: "Thu Ngân",
     items: [{ name: "Trà sữa ô long", quantity: 1, price: 20000 }],
     total: 20000,
@@ -39,10 +38,6 @@ const Invoice = () => {
             />
           </span>
           <span className="text-end">Ngày: {invoiceData.date}</span>
-        </p>
-        <p className="col-12 d-flex justify-content-between">
-          <span>Giờ vào: {invoiceData.timeIn}</span>
-          <span className="text-end">Giờ ra: {invoiceData.timeOut}</span>
         </p>
       </div>
 
