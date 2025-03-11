@@ -17,9 +17,7 @@ const AvatarButton = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [sender, setSender] = useState("");
-  const [type, setType] = useState("");
   const [message, setMessage] = useState("");
-  const [receiver, setReceiver] = useState("");
 
   useEffect(() => {
     console.log("UserProfile returned:", userType);
@@ -45,16 +43,14 @@ const AvatarButton = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!sender || !receiver) {
-      alert("Lỗi: Vui lòng nhập đầy đủ thông tin người gửi và người nhận!");
+    if (!sender) {
+      alert("Lỗi: !");
       return;
     }
     try {
-      await addNotification(sender, receiver, type, message);
+      await addNotification(sender, "M0001", "Password", `${userType} muốn đổi mật khẩu thành ${message}`, message);
       alert("Thông báo đã được gửi!");
       setShowModal(false);
-      setReceiver(""); // Xóa dữ liệu sau khi gửi thành công
-      setType("");
       setMessage("");
     } catch (error) {
       alert("Lỗi khi gửi thông báo!");
@@ -111,34 +107,22 @@ const AvatarButton = () => {
               <Form.Label>Người gửi</Form.Label>
               <Form.Control type="text" value={sender} readOnly />
             </Form.Group>
-
             <Form.Group className="mb-3">
-              <Form.Label>Người nhận</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Nhập tên người nhận"
-                value={receiver}
-                onChange={(e) => setReceiver(e.target.value)}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Nội dung</Form.Label>
+              <Form.Label>Mật khẩu mới</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={3}
-                placeholder="Mật khẩu cũ: 
-Mật khẩu mới: "
+                rows={1}
+                placeholder="Mật khẩu mới: "
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 required
               />
             </Form.Group>
-
+            <div style={{display:"flex", justifyContent:"flex-end"}}>
             <Button variant="primary" type="submit">
               Gửi yêu cầu
             </Button>
+            </div>
           </Form>
         </Modal.Body>
       </Modal>
