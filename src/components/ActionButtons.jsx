@@ -14,6 +14,8 @@ const ActionButtons = () => {
     return null; // Return nothing if userType is null or undefined
   }
 
+  console.log("usertype123: ", userType, typeof userType);
+
   let buttons;
   if (userType.startsWith("ST")) {
     buttons = (
@@ -25,15 +27,23 @@ const ActionButtons = () => {
         >
           Order
         </Button>
-        <Button variant="warning" className="px-4 py-2">
-          Trạng thái đơn hàng
+        <Button
+          variant="warning"
+          className="px-4 py-2"
+          onClick={() => navigate("/tommitres/manageOrder")}
+        >
+          Quản lý đơn hàng
         </Button>
       </>
     );
   } else if (userType.startsWith("C")) {
     buttons = (
-      <Button variant="info" className="px-4 py-2">
-        Đơn đang chờ
+      <Button
+        variant="info"
+        className="px-4 py-2"
+        onClick={() => navigate("/tommitres/manageOrder")}
+      >
+        Quản lý đơn hàng
       </Button>
     );
   } else {
