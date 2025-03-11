@@ -1,47 +1,99 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import Header from "../components/Header";
 import UserProfile from "../backend/userProfile";
-
-const initialOrders = [
-  {
-    orderID: "DH12345",
-    customerName: "Nguyễn Văn A",
-    status: "Đang xử lý",
-    tableNumber: "Bàn 1",
-    totalAmount: 345000,
-    items: [
-      { productID: 1, productName: "Pizza Margherita", unitPrice: 150000, quantity: 2 },
-      { productID: 2, productName: "Trà Sữa Trân Châu", unitPrice: 45000, quantity: 1 },
-    ],
-    paymentMethod: "Tiền mặt",
-  },
-  {
-    orderID: "DH12346",
-    customerName: "Trần Thị B",
-    status: "Đang xử lý",
-    tableNumber: "Bàn 2",
-    totalAmount: 195000,
-    items: [
-      { productID: 3, productName: "Burger Bò Phô Mai", unitPrice: 120000, quantity: 1 },
-      { productID: 4, productName: "Coca Cola", unitPrice: 15000, quantity: 5 },
-    ],
-    paymentMethod: "Chuyển khoản",
-  },
-];
+import { db } from "../backend/firebase";
+import "./orderStatusScreen.css";
 
 const OrderStatusScreen = () => {
-  const [orders, setOrders] = useState(initialOrders);
+  const [orders, setOrders] = useState([]);
+  const [productsMap, setProductsMap] = useState({});
   const [filterStatus, setFilterStatus] = useState("Tất cả");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { userType } = UserProfile();
+  const [editingOrder, setEditingOrder] = useState(null);
 
-  const updateOrderStatus = (orderID, newStatus) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.orderID === orderID ? { ...order, status: newStatus } : order
-      )
-    );
-    alert(`Đã cập nhật trạng thái đơn hàng ${orderID} thành "${newStatus}"`);
+  // ✅ Lấy danh sách sản phẩm từ Firestore
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsCollection = collection(db, "Product");
+        const productSnapshot = await getDocs(productsCollection);
+        const productMap = {};
+        productSnapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          productMap[data.productID] = data.productName; // Map productID -> productName
+        });
+        setProductsMap(productMap);
+      } catch (err) {
+        console.error("❌ Lỗi khi lấy sản phẩm:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // ✅ Lấy danh sách đơn hàng từ Firestore
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const ordersCollection = collection(db, "Order");
+        const orderSnapshot = await getDocs(ordersCollection);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const orderList = orderSnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            buyDate: doc.data().buyDate?.toDate() || null,
+          }))
+          .filter((order) => {
+            if (!order.buyDate) return false;
+            return (
+              order.buyDate.getFullYear() === today.getFullYear() &&
+              order.buyDate.getMonth() === today.getMonth() &&
+              order.buyDate.getDate() === today.getDate()
+            );
+          })
+          .sort((a, b) => b.buyDate - a.buyDate);
+
+        setOrders(orderList);
+      } catch (err) {
+        console.error("❌ Lỗi khi lấy đơn hàng:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  // ✅ Xóa đơn hàng
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) return;
+    try {
+      await deleteDoc(doc(db, "Order", orderId));
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order.id !== orderId)
+      );
+      alert("Đã hủy đơn hàng thành công!");
+    } catch (error) {
+      console.error("❌ Lỗi khi xóa đơn hàng:", error);
+      alert("Xóa đơn hàng thất bại!");
+    }
   };
+
+  if (loading) return <div>Đang tải dữ liệu...</div>;
+  if (error) return <div>Lỗi: {error}</div>;
 
   const filteredOrders =
     filterStatus === "Tất cả"
@@ -49,272 +101,92 @@ const OrderStatusScreen = () => {
       : orders.filter((order) => order.status === filterStatus);
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        maxWidth: "100%",
-        margin: "0 auto",
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "#f5f5f5",
-        borderRadius: "8px",
-      }}
-    >
+    <div>
       <Header />
-      <div style={{ height: "clamp(100px, 10vh, 100px)" }} />
-      <h1
-        style={{
-          fontSize: "clamp(20px, 5vw, 24px)",
-          fontWeight: "600",
-          marginBottom: "20px",
-          textAlign: "center",
-          color: "#333",
-        }}
-      >
-        Quản lý trạng thái đơn hàng
-      </h1>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: "15px",
-          marginBottom: "20px",
-        }}
-      >
+      <h1>Quản lý trạng thái đơn hàng - Hôm nay</h1>
+
+      {/* Bộ lọc trạng thái đơn hàng */}
+      <div>
         {["Tất cả", "Đang xử lý", "Hoàn thành"].map((status) => (
-          <button
-            key={status}
-            onClick={() => setFilterStatus(status)}
-            style={{
-              padding: "8px 20px",
-              backgroundColor: filterStatus === status ? "#ff5722" : "#fff",
-              color: filterStatus === status ? "#fff" : "#333",
-              border: "1px solid #ddd",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontSize: "clamp(12px, 2vw, 14px)",
-              fontWeight: "500",
-              transition: "background-color 0.3s",
-            }}
-            onMouseOver={(e) =>
-              (e.target.style.backgroundColor =
-                filterStatus === status ? "#e64a19" : "#f0f0f0")
-            }
-            onMouseOut={(e) =>
-              (e.target.style.backgroundColor =
-                filterStatus === status ? "#ff5722" : "#fff")
-            }
-          >
+          <button key={status} onClick={() => setFilterStatus(status)}>
             {status}
           </button>
         ))}
       </div>
-      <div className="order-container">
-        {/* Tiêu đề cột cho web */}
-        <div className="order-header">
-          <div className="order-field">Số bàn</div>
-          <div className="order-field">Chi tiết món</div>
-          <div className="order-field">Phương thức thanh toán</div>
-          <div className="order-field">Tổng tiền</div>
-          <div className="order-field">Trạng thái</div>
-          <div className="order-field">Thao tác</div>
-        </div>
+      <br />
 
-        {filteredOrders.length === 0 ? (
-          <p
-            style={{
-              textAlign: "center",
-              padding: "20px",
-              color: "#666",
-              fontSize: "clamp(12px, 2vw, 14px)",
-            }}
-          >
-            Không có đơn hàng nào!
-          </p>
-        ) : (
-          filteredOrders.map((order) => (
-            <div key={order.orderID} className="order-item">
-              <div className="order-field">
-                <strong>Bàn:</strong> {order.tableNumber}
-              </div>
-              <div className="order-field">
-                <strong>Món ăn:</strong>
-                {order.items.map((item) => (
-                  <div key={item.productID} style={{ marginBottom: "5px" }}>
-                    {item.productName} x {item.quantity}
-                  </div>
-                ))}
-              </div>
-              <div className="order-field">
-                <strong>Thanh toán:</strong> {order.paymentMethod}
-              </div>
-              <div className="order-field">
-                <strong>Tổng tiền:</strong>{" "}
-                {order.totalAmount.toLocaleString("vi-VN")} VNĐ
-              </div>
-              <div className="order-field">
-                <strong>Trạng thái:</strong> {order.status}
-              </div>
-              <div className="order-field">
-                {(userType === null || userType === undefined) ? null : userType.startsWith("C") ? (
-                  <button
-                    onClick={() => alert(`Chỉnh sửa đơn hàng ${order.orderID}`)}
-                    style={{
-                      padding: "6px 16px",
-                      backgroundColor: "#2196F3",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "clamp(11px, 2vw, 13px)",
-                      fontWeight: "500",
-                      transition: "background-color 0.3s",
-                      width: "100%",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    Chỉnh sửa
-                  </button>
-                ) : userType.startsWith("ST") ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    {order.status === "Đang xử lý" && (
+      {/* Bảng đơn hàng */}
+      <table className="order-table">
+        <thead>
+          <tr>
+            <th>Bàn</th>
+            <th>Trạng thái</th>
+            <th>Phương thức thanh toán</th>
+            <th>Sản phẩm</th> {/* ✅ Cột mới */}
+            <th>Tổng tiền</th>
+            <th>Ngày mua</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredOrders.length === 0 ? (
+            <tr>
+              <td colSpan="7" style={{ textAlign: "center" }}>
+                Không có đơn hàng nào hôm nay!
+              </td>
+            </tr>
+          ) : (
+            filteredOrders.map((order) => (
+              <tr key={order.id}>
+                <td>{order.tableNumber}</td>
+                <td>{order.status}</td>
+                <td>{order.paymentMethod}</td>
+                <td>
+                  <ul>
+                    {order.products?.map((item, index) => (
+                      <li key={index}>
+                        {item.orderQuantity} x{" "}
+                        {productsMap[item.productID] || "Không xác định"} (
+                        {item.singleProductPrice?.toLocaleString("vi-VN")} VNĐ)
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td>{order.totalPrice?.toLocaleString("vi-VN")} VNĐ</td>
+                <td>
+                  {order.buyDate
+                    ? order.buyDate.toLocaleString("vi-VN")
+                    : "Không có dữ liệu"}
+                </td>
+                <td>
+                  {order.status !== "Hoàn thành" && (
+                    <div className="action-buttons">
                       <button
-                        onClick={() => updateOrderStatus(order.orderID, "Hoàn thành")}
-                        style={{
-                          padding: "6px 16px",
-                          backgroundColor: "#4caf50",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                          fontSize: "clamp(11px, 2vw, 13px)",
-                          fontWeight: "500",
-                          transition: "background-color 0.3s",
-                          width: "100%",
-                        }}
+                        className="confirm-btn"
+                        onClick={() => alert(`Xác nhận đơn hàng: ${order.id}`)}
                       >
-                        Hoàn thành
+                        Xác nhận
                       </button>
-                    )}
-                    <button
-                      onClick={() => alert(`Chỉnh sửa đơn hàng ${order.orderID}`)}
-                      style={{
-                        padding: "6px 16px",
-                        backgroundColor: "#2196F3",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "clamp(11px, 2vw, 13px)",
-                        fontWeight: "500",
-                        transition: "background-color 0.3s",
-                        width: "100%",
-                      }}
-                    >
-                      Chỉnh sửa
-                    </button>
-                    <button
-                      onClick={() => alert(`Xóa đơn hàng ${order.orderID}`)}
-                      style={{
-                        padding: "6px 16px",
-                        backgroundColor: "#f44336",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "clamp(11px, 2vw, 13px)",
-                        fontWeight: "500",
-                        transition: "background-color 0.3s",
-                        width: "100%",
-                      }}
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-      {/* CSS Responsive */}
-      <style jsx>{`
-        .order-container {
-          width: 100%;
-          background-color: #fff;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .order-item {
-          padding: 15px;
-          border-bottom: 1px solid #e0e0e0;
-        }
-        .order-field {
-          margin-bottom: 10px;
-          font-size: clamp(12px, 2vw, 14px);
-          color: #333;
-        }
-        .order-field strong {
-          display: inline-block;
-          width: 100px;
-        }
-        .order-header {
-          display: none;
-        }
-
-        @media (min-width: 768px) {
-          .order-container {
-            min-width: 820px;
-            overflow-x: auto;
-          }
-          .order-header {
-            display: flex;
-            align-items: center;
-            background-color: #fafafa;
-            padding: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #e0e0e0;
-            color: #555;
-            font-size: 14px;
-          }
-          .order-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #e0e0e0;
-          }
-          .order-field {
-            margin-bottom: 0;
-            text-align: center;
-          }
-          .order-field strong {
-            display: none;
-          }
-          .order-field:nth-child(1) {
-            width: 100px;
-          }
-          .order-field:nth-child(2) {
-            width: 280px;
-            text-align: left;
-          }
-          .order-field:nth-child(3) {
-            width: 140px;
-          }
-          .order-field:nth-child(4) {
-            width: 150px;
-            text-align: right;
-          }
-          .order-field:nth-child(5) {
-            width: 100px;
-          }
-          .order-field:nth-child(6) {
-            width: 120px;
-          }
-          .order-field button {
-            width: auto;
-          }
-        }
-      `}</style>
+                      <button
+                        className="edit-btn"
+                        onClick={() => setEditingOrder(order)}
+                      >
+                        Chỉnh sửa
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteOrder(order.id)}
+                      >
+                        Hủy đơn
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
