@@ -1,8 +1,16 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../backend/firebase.js";
-import { doc, updateDoc, query, collection, where, getDocs } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { createOrder } from "../backend/orderObject.js";
+import UserProfile from "../backend/userProfile";
 
 const YourOrder = () => {
   const location = useLocation();
@@ -12,36 +20,43 @@ const YourOrder = () => {
   const [paymentMethod, setPaymentMethod] = useState("cash"); // State để lưu phương thức thanh toán
   const [showDetails, setShowDetails] = useState(false); // State để hiển thị/ẩn chi tiết tổng cộng
   const [showPaymentMethods, setShowPaymentMethods] = useState(false); // State để hiển thị/ẩn phương thức thanh toán
+  const { userType } = UserProfile();
+  const navigate = useNavigate();
+
+  console.log("userType from your order", userType);
 
   const handlePlaceOrder = async () => {
     if (!paymentMethod) {
       alert("Vui lòng chọn phương thức thanh toán!");
       return;
     }
-    for (let changeProduct of cartItems){
+    for (let changeProduct of cartItems) {
       const productQuery = query(
-        collection(db, "Product"),where("productID", "==", changeProduct.productID)
+        collection(db, "Product"),
+        where("productID", "==", changeProduct.productID)
       );
-      try{
+      try {
         const querySnapshot = await getDocs(productQuery);
-        for(const returnData of querySnapshot.docs){
-          if(returnData.exists()){
+        for (const returnData of querySnapshot.docs) {
+          if (returnData.exists()) {
             const currentQuantity = returnData.data().quantity;
-            const updatedQuantity = currentQuantity - changeProduct.orderQuantity;
+            const updatedQuantity =
+              currentQuantity - changeProduct.orderQuantity;
             const productRef = doc(db, "Product", returnData.id);
             await updateDoc(productRef, {
-              quantity: updatedQuantity
-            })
+              quantity: updatedQuantity,
+            });
           }
         }
-      }
-      catch(error) {
+      } catch (error) {
         console.error(error);
       }
     }
     currentOrders.paymentMethod = paymentMethod;
     createOrder(currentOrders);
-    alert("Yêu cầu thanh toán của bạn đã được gửi. Vui lòng đợi nhân viên bàn trong giây lát");
+    alert(
+      "Yêu cầu thanh toán của bạn đã được gửi. Vui lòng đợi nhân viên bàn trong giây lát"
+    );
   };
 
   // Hàm toggle hiển thị chi tiết tổng cộng
@@ -160,7 +175,7 @@ const YourOrder = () => {
                     fontSize: "clamp(14px, 3vw, 16px)",
                   }}
                 >
-                  {(item.singleProductPrice).toLocaleString("vi-VN")} VNĐ
+                  {item.singleProductPrice.toLocaleString("vi-VN")} VNĐ
                 </p>
               </div>
             </div>
@@ -365,23 +380,49 @@ const YourOrder = () => {
 
       {/* Nút đặt hàng */}
       <div style={{ textAlign: "center" }}>
-        <button
-          onClick={handlePlaceOrder}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "15px",
-            backgroundColor: "#ff5722",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "clamp(16px, 4vw, 18px)",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Yêu Cầu Thanh Toán
-        </button>
+        {(() => {
+          if (userType && userType.startsWith("ST")) {
+            return (
+              <button
+                onClick={() => navigate("/tommitres/Invoice")}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginTop: "15px",
+                  backgroundColor: "#007bff",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "clamp(16px, 4vw, 18px)",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Xuất Hóa Đơn
+              </button>
+            );
+          } else {
+            return (
+              <button
+                onClick={() => navigate("/tommitres/ThankYou")}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  marginTop: "15px",
+                  backgroundColor: "#ff5722",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "clamp(16px, 4vw, 18px)",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Yêu Cầu Thanh Toán
+              </button>
+            );
+          }
+        })()}
       </div>
     </div>
   );
