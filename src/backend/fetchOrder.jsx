@@ -10,17 +10,27 @@ const OrderList = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
+      console.log("Fetching orders...");
+
       try {
         const ordersCollection = collection(db, "Order");
+        console.log("Orders collection reference:", ordersCollection);
+
         const orderSnapshot = await getDocs(ordersCollection);
+        console.log("Order snapshot:", orderSnapshot);
+
         const orderList = orderSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+
+        console.log("Fetched orders:", orderList);
         setOrders(orderList);
       } catch (err) {
+        console.error("Error fetching orders:", err);
         setError(err.message);
       } finally {
+        console.log("Finished fetching orders.");
         setLoading(false);
       }
     };
@@ -29,12 +39,16 @@ const OrderList = () => {
   }, []);
 
   if (loading) {
+    console.log("Loading state: true");
     return <div>Loading...</div>;
   }
 
   if (error) {
+    console.error("Error state:", error);
     return <div>Error: {error}</div>;
   }
+
+  console.log("Final orders state:", orders);
 
   return (
     <div>
