@@ -2,10 +2,10 @@ import { collection, addDoc, query, orderBy, getDocs, doc, where, getDoc, update
 import { db } from "./firebase.js";
 
 export class Order {
-    constructor(orderID, timeCreated, timeFinished, userName, tableNumber, paymentMethod, totalPrice) {
+    constructor(orderID, status, buyDate, userName, tableNumber, paymentMethod, totalPrice) {
       this.orderID = orderID;
-      this.timeCreated = timeCreated;
-      this.timeFinished = timeFinished;
+      this.status = status;
+      this.buyDate = buyDate;
       this.userName = userName;
       this.tableNumber = tableNumber;
       this.paymentMethod = paymentMethod;
@@ -49,8 +49,8 @@ export class Order {
 export async function createOrder(currentOrder){
   const orderRef = await addDoc(collection(db, "Order"),{
     orderID: currentOrder.orderID,
-    timeCreated: null,
-    timeFinished: null,
+    buyDate: null,
+    status: null,
     userName: null,
     tableNumber: currentOrder.tableNumber,
     paymentMethod: currentOrder.paymentMethod==="cash"?"Tiền mặt":"Chuyển khoản",
