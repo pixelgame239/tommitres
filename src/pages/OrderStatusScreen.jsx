@@ -170,7 +170,8 @@ const OrderStatusScreen = () => {
                 {order.totalAmount.toLocaleString("vi-VN")} VNĐ
               </div>
               <div className="order-field">
-                {userType.startsWith("C") ? (
+                {(userType===null||userType===undefined)?null
+                :userType.startsWith("C") ? (
                   <button
                     onClick={() => alert(`Chỉnh sửa đơn hàng ${order.orderID}`)}
                     style={{
