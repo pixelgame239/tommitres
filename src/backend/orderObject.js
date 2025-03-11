@@ -57,9 +57,43 @@ export async function createOrder(currentOrder){
     totalPrice: currentOrder.totalPrice,
     products: currentOrder.products.map(product=>({
       productID: product.productID,
+      productName: product.productName,
       orderQuantity: product.orderQuantity,
       unitPrice: product.unitPrice,
       singleProductPrice: product.singleProductPrice
     }))
   });
+}
+export async function confirmOrder(orderID, userType){
+  const queryOrderID = query(collection(db, "Order"), where("orderID", "==", Number(orderID)));
+  const IDsnapshot = await getDocs(queryOrderID);
+  if (IDsnapshot.empty) {
+    console.log("No order found with the provided orderID");
+    return;
+  }
+  const IDdata = IDsnapshot.docs[0]; 
+  const dataRef = doc(db, "Order", IDdata.id);
+  const currentDate = Timestamp.now().toDate();
+  try {
+    await updateDoc(dataRef, { buyDate: currentDate, status: "Đang xử lý", userName: userType });
+    console.log("Updated buydate and status");
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function getOrderDetail(currentOrderID){
+  const thisOrderID = Number(currentOrderID);
+  const queryOrderBill = query(collection(db,"Order"),where("orderID","==", thisOrderID));
+  try{
+    const billSnapshot = await getDocs(queryOrderBill);
+    if(billSnapshot.empty){
+      console.log("No order found");
+      return null;
+    }
+    const billData = billSnapshot.docs[0].data();
+    console.log(`query return: ${billData}`);
+    return billData;
+  } catch(error){
+    console.log(error);
+  }
 }
