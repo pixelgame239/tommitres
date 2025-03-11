@@ -1,21 +1,19 @@
+import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { db } from "../backend/firebase";
 
 const Invoice = () => {
-  const [table, setTable] = useState("MVT - MANG Về");
-  const navigate = useNavigate(); // Khởi tạo hook điều hướng
-
-  const invoiceData = {
-    invoiceNumber: "080215",
-    orderCode: "#5RU20",
-    date: "08/03/2025",
-    status: "finished",
-    cashier: "Thu Ngân",
-    items: [{ name: "Trà sữa ô long", quantity: 1, price: 20000 }],
-    total: 20000,
-    restaurant: "Quán Tôm & Mít",
-    address: "Trục hồ Văn Khê Nguyễn Du, Thường Tín, HN",
-  };
+  const [table, setTable] = useState();
+  const location = useLocation();
+  const { billData } = location.state || {};
+  const navigate = useNavigate();
+  
+  console.log(billData.buyDate);
+  
+  const dateStamp = billData.buyDate;
+  const buyDate = new Date(dateStamp.seconds * 1000);
+  const currentBuyDate = buyDate.toLocaleDateString("vi-VN");
 
   const handlePrint = () => {
     window.print();
@@ -31,25 +29,16 @@ const Invoice = () => {
       <div className="border bg-white shadow rounded p-4">
         <h2 className="text-center fw-bold fs-4">HÓA ĐƠN THANH TOÁN</h2>
         <hr className="my-2" />
-
+        
         <div className="row text-start">
           <p className="col-12 d-flex justify-content-between fw-semibold">
-            <span>Mã HD: {invoiceData.orderCode}</span>
-            <span className="text-end">TN: {invoiceData.cashier}</span>
+            <span className="text-end">NV: {billData.userName}</span>
           </p>
           <p className="col-12 d-flex justify-content-between align-items-center">
             <span className="d-flex align-items-center gap-2">
-              Bàn:
-              <input
-                type="text"
-                value={table}
-                onChange={(e) => setTable(e.target.value)}
-                className="form-control form-control-sm w-25"
-                placeholder="Nhập bàn"
-                readOnly
-              />
+              {billData.tableNumber}
             </span>
-            <span className="text-end">Ngày: {invoiceData.date}</span>
+            <span className="text-end">Ngày: {currentBuyDate}</span>
           </p>
         </div>
 
@@ -65,14 +54,14 @@ const Invoice = () => {
             </tr>
           </thead>
           <tbody>
-            {invoiceData.items.map((item, index) => (
+            {billData.products.map((product, index) => (
               <tr key={index}>
                 <td className="text-center">{index + 1}</td>
-                <td className="text-center">{item.name}</td>
-                <td className="text-center">{item.quantity}</td>
-                <td className="text-center">{item.price.toLocaleString()}đ</td>
+                <td className="text-center">{product.productName}</td>
+                <td className="text-center">{product.orderQuantity}</td>
+                <td className="text-center">{product.unitPrice.toLocaleString()}đ</td>
                 <td className="text-center">
-                  {(item.quantity * item.price).toLocaleString()}đ
+                  {(product.singleProductPrice).toLocaleString()}đ
                 </td>
               </tr>
             ))}
@@ -84,27 +73,26 @@ const Invoice = () => {
           <div className="d-flex justify-content-between fw-bold">
             <span className="text-start">Thành tiền:</span>
             <span className="text-end">
-              {invoiceData.total.toLocaleString()}đ
+              {billData.totalPrice.toLocaleString()}đ
             </span>
           </div>
           <div className="d-flex justify-content-between fw-bold">
             <span className="text-start">Tổng tiền:</span>
             <span className="text-end">
-              {invoiceData.total.toLocaleString()}đ
+              {billData.totalPrice.toLocaleString()}đ
             </span>
           </div>
           <div className="d-flex justify-content-between fw-bold">
-            <span className="text-start">+ Thanh toán tiền mặt:</span>
+            <span className="text-start">+ {billData.paymentMethod}</span>
             <span className="text-end">
-              {invoiceData.total.toLocaleString()}đ
+              {billData.totalPrice.toLocaleString()}đ
             </span>
           </div>
+          <p className="fw-bold text-center mt-2">Quán Tôm & Mít</p>
+          <p className="text-center text-muted">Địa chỉ: Trục hồ Văn Khê, Nguyễn Du, Thường Tín, HN</p>
         </div>
-
-        <p className="fw-bold text-center mt-2">{invoiceData.restaurant}</p>
-        <p className="text-center text-muted">{invoiceData.address}</p>
       </div>
-
+      
       {/* Buttons Container */}
       <div className="text-center mt-3">
         <button
