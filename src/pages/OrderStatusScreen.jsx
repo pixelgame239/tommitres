@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Header from "../components/Header"; // Giả sử bạn đã có Header component
+import Header from "../components/Header";
 import UserProfile from "../backend/userProfile";
 
 const initialOrders = [
@@ -10,18 +10,8 @@ const initialOrders = [
     tableNumber: "Bàn 1",
     totalAmount: 345000,
     items: [
-      {
-        productID: 1,
-        productName: "Pizza Margherita",
-        unitPrice: 150000,
-        quantity: 2,
-      },
-      {
-        productID: 2,
-        productName: "Trà Sữa Trân Châu",
-        unitPrice: 45000,
-        quantity: 1,
-      },
+      { productID: 1, productName: "Pizza Margherita", unitPrice: 150000, quantity: 2 },
+      { productID: 2, productName: "Trà Sữa Trân Châu", unitPrice: 45000, quantity: 1 },
     ],
     paymentMethod: "Tiền mặt",
   },
@@ -32,12 +22,7 @@ const initialOrders = [
     tableNumber: "Bàn 2",
     totalAmount: 195000,
     items: [
-      {
-        productID: 3,
-        productName: "Burger Bò Phô Mai",
-        unitPrice: 120000,
-        quantity: 1,
-      },
+      { productID: 3, productName: "Burger Bò Phô Mai", unitPrice: 120000, quantity: 1 },
       { productID: 4, productName: "Coca Cola", unitPrice: 15000, quantity: 5 },
     ],
     paymentMethod: "Chuyển khoản",
@@ -48,7 +33,6 @@ const OrderStatusScreen = () => {
   const [orders, setOrders] = useState(initialOrders);
   const [filterStatus, setFilterStatus] = useState("Tất cả");
   const { userType } = UserProfile();
-  console.log("userTypeeeeee", userType);
 
   const updateOrderStatus = (orderID, newStatus) => {
     setOrders((prevOrders) =>
@@ -76,8 +60,7 @@ const OrderStatusScreen = () => {
       }}
     >
       <Header />
-      <div style={{ height: "clamp(100px, 10vh, 100px)" }} />{" "}
-      {/* Spacer responsive */}
+      <div style={{ height: "clamp(100px, 10vh, 100px)" }} />
       <h1
         style={{
           fontSize: "clamp(20px, 5vw, 24px)",
@@ -170,8 +153,10 @@ const OrderStatusScreen = () => {
                 {order.totalAmount.toLocaleString("vi-VN")} VNĐ
               </div>
               <div className="order-field">
-                {(userType===null||userType===undefined)?null
-                :userType.startsWith("C") ? (
+                <strong>Trạng thái:</strong> {order.status}
+              </div>
+              <div className="order-field">
+                {(userType === null || userType === undefined) ? null : userType.startsWith("C") ? (
                   <button
                     onClick={() => alert(`Chỉnh sửa đơn hàng ${order.orderID}`)}
                     style={{
@@ -185,34 +170,34 @@ const OrderStatusScreen = () => {
                       fontWeight: "500",
                       transition: "background-color 0.3s",
                       width: "100%",
+                      marginBottom: "5px",
                     }}
                   >
                     Chỉnh sửa
                   </button>
                 ) : userType.startsWith("ST") ? (
-                  <>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                    {order.status === "Đang xử lý" && (
+                      <button
+                        onClick={() => updateOrderStatus(order.orderID, "Hoàn thành")}
+                        style={{
+                          padding: "6px 16px",
+                          backgroundColor: "#4caf50",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          fontSize: "clamp(11px, 2vw, 13px)",
+                          fontWeight: "500",
+                          transition: "background-color 0.3s",
+                          width: "100%",
+                        }}
+                      >
+                        Hoàn thành
+                      </button>
+                    )}
                     <button
-                      // onClick={() => confirmOrder(order.orderID)}
-                      style={{
-                        padding: "6px 16px",
-                        backgroundColor: "#4caf50",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "clamp(11px, 2vw, 13px)",
-                        fontWeight: "500",
-                        transition: "background-color 0.3s",
-                        width: "100%",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      Xác nhận
-                    </button>
-                    <button
-                      onClick={() =>
-                        alert(`Chỉnh sửa đơn hàng ${order.orderID}`)
-                      }
+                      onClick={() => alert(`Chỉnh sửa đơn hàng ${order.orderID}`)}
                       style={{
                         padding: "6px 16px",
                         backgroundColor: "#2196F3",
@@ -245,7 +230,7 @@ const OrderStatusScreen = () => {
                     >
                       Xóa
                     </button>
-                  </>
+                  </div>
                 ) : null}
               </div>
             </div>
@@ -254,7 +239,6 @@ const OrderStatusScreen = () => {
       </div>
       {/* CSS Responsive */}
       <style jsx>{`
-        /* Bố cục mặc định cho mobile (dọc) */
         .order-container {
           width: 100%;
           background-color: #fff;
@@ -275,10 +259,9 @@ const OrderStatusScreen = () => {
           width: 100px;
         }
         .order-header {
-          display: none; /* Ẩn tiêu đề trên mobile */
+          display: none;
         }
 
-        /* Bố cục cho web (ngang) */
         @media (min-width: 768px) {
           .order-container {
             min-width: 820px;
@@ -305,7 +288,7 @@ const OrderStatusScreen = () => {
             text-align: center;
           }
           .order-field strong {
-            display: none; /* Ẩn nhãn trên web */
+            display: none;
           }
           .order-field:nth-child(1) {
             width: 100px;
@@ -328,7 +311,7 @@ const OrderStatusScreen = () => {
             width: 120px;
           }
           .order-field button {
-            width: auto; /* Nút không full-width trên web */
+            width: auto;
           }
         }
       `}</style>
