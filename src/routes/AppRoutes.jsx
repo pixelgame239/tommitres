@@ -16,6 +16,7 @@ import YourOrder from "../pages/YourOrder"; // Import file mới
 import AccountScreen from "../pages/manageAccount";
 import RevenueExcelLikeScreen from "../pages/DetailedRevenueScreen";
 import InvoiceForm from "../pages/InvoiceForm";
+import ThankYouScreen from "../pages/ThankYouScreen";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -31,6 +32,8 @@ const AppRoutes = () => {
       <Route path="/tommitres/manageAccount" element={<AccountScreen />} />
 
       <Route path="/tommitres/Invoice" element={<InvoiceForm />} />
+
+      <Route path="/tommitres/ThankYou" element={<ThankYouScreen />} />
 
 
       <Route
