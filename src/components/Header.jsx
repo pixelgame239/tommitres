@@ -10,7 +10,11 @@ import "../styles/avatarStyle.css";
 import notiIcon from "../assets/notificationIcon.png";
 import AvatarButton from "./AvatarButton";
 import NotificationSign from "./NotificationSign";
-// SVG icons cho các loại thông báo (thay vì emoji)
+import { collection, onSnapshot, deleteDoc, doc, getDocs, orderBy, query, where } from "firebase/firestore";
+import { db } from "../backend/firebase";
+import addNotification from "../backend/addNotification"; 
+import { acceptPasswordChange } from "../backend/updatePassword";
+
 const SuccessIcon = () => (
   <svg
     width="20"
@@ -50,7 +54,19 @@ const WarningIcon = () => (
     <path d="M12 2L2 20h20L12 2zm0 16v-2m0-4v-4" />
   </svg>
 );
-
+const DeclineIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#f5222d"
+    strokeWidth="2"
+  >
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
 const Header = () => {
   const navigate = useNavigate();
   const { width } = ResponsiveScreen();
@@ -61,34 +77,59 @@ const Header = () => {
   const dropdownRef = useRef(null);
 
   // State để quản lý danh sách thông báo
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: "Đơn hàng của bạn đã được xác nhận!",
-      time: "5 phút trước",
-      type: "success",
-    },
-    {
-      id: 2,
-      message: "Khuyến mãi mới: Giảm 20% hôm nay!",
-      time: "1 giờ trước",
-      type: "info",
-    },
-    {
-      id: 3,
-      message: "Bạn có một tin nhắn mới từ Tôm & Mít",
-      time: "2 giờ trước",
-      type: "warning",
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  useEffect(() => {
+    if (userType) {
+      const unsubscribe = onSnapshot(query(
+        collection(db, "Notification"),
+        where("Receiver", "==", `${userType}`),
+        orderBy("CreatedAt", "desc")
+      ),
+        (snapshot) => {
+          const notiList = snapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id, 
+          }));
+          console.log("Fetched Notifications:", notiList);
+          setNotifications(notiList);
+        }
+      );
+      return () => unsubscribe();
+    }
+  }, [userType]);
+  const deleteNotificationByMessage = async (message) => {
+    try {
+      const snapshot = await getDocs(collection(db, "Notification"));
+      const notificationsToDelete = snapshot.docs.filter(
+        (doc) => doc.data().Message.includes(message) // Find notifications that match the message
+      );
 
-  // Hàm toggle dropdown menu
+      if (notificationsToDelete.length > 0) {
+        // Delete each notification that matches
+        for (const notificationDoc of notificationsToDelete) {
+          await deleteDoc(doc(db, "Notification", notificationDoc.id));
+          console.log(
+            `Notification with message "${message}" deleted from Firestore`
+          );
+        }
+
+        // Remove the deleted notifications from the local state
+        const updatedNotifications = notifications.filter(
+          (noti) => !noti.Message.includes(message)
+        );
+        setNotifications(updatedNotifications);
+      } else {
+        console.log("No notifications found with this message");
+      }
+    } catch (error) {
+      console.error("Error deleting notification by message:", error);
+    }
+  };
   const toggleDropdown = () => {
     console.log("Toggling dropdown, current state:", isDropdownOpen); // Debug
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  // Đóng dropdown khi click bên ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -109,22 +150,6 @@ const Header = () => {
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [isDropdownOpen]);
-
-  // Hàm xử lý khi nhấn nút "Đánh dấu đã đọc"
-  const handleMarkAsRead = (id) => {
-    console.log(`Đánh dấu thông báo ${id} là đã đọc`); // Debug
-    setNotifications(notifications.filter((noti) => noti.id !== id));
-  };
-
-  // Hàm xử lý khi nhấn nút "Xóa"
-  const handleDelete = (id) => {
-    console.log(`Xóa thông báo ${id}`); // Debug
-    setNotifications(notifications.filter((noti) => noti.id !== id));
-  };
-
-  // Debug userType và notifications
-  console.log("userType:", userType);
-  console.log("Notifications:", notifications);
 
   return (
     <div
@@ -181,8 +206,9 @@ const Header = () => {
           className="noti-icon-container"
           style={{ position: "relative", cursor: "pointer" }}
           ref={dropdownRef}
+          onClick={toggleDropdown}
         >
-          {/* Icon thông báo chính (notiIcon) */}
+          {/* Icon thông báo chính (notiIcon)
           <div
             style={{
               position: "relative",
@@ -192,14 +218,12 @@ const Header = () => {
               transition: "background-color 0.2s",
             }}
             onClick={toggleDropdown}
-          >
+          > */}
             <img
               src={notiIcon}
               className="noti-icon"
               alt="Thông báo"
               style={{
-                width: isMobile ? "28px" : "32px",
-                height: isMobile ? "28px" : "32px",
                 transition: "transform 0.2s",
                 filter: isDropdownOpen ? "brightness(0.8)" : "none",
               }}
@@ -208,8 +232,8 @@ const Header = () => {
               }
               onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
             />
-            <NotificationSign />
-          </div>
+            {notifications.length===0?null:<NotificationSign />}
+          {/* </div> */}
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
@@ -304,11 +328,14 @@ const Header = () => {
                         justifyContent: "center",
                       }}
                     >
-                      {noti.type === "success" ? (
+                      {noti.Type === "Accept" ? (
                         <SuccessIcon />
-                      ) : noti.type === "info" ? (
-                        <InfoIcon />
-                      ) : (
+                      // ) : noti.Type === "Order" ? (
+                      //   <InfoIcon />
+                      ) 
+                      : noti.Type === "Refuse"? (
+                        <DeclineIcon />)
+                        :(
                         <WarningIcon />
                       )}
                     </div>
@@ -321,18 +348,8 @@ const Header = () => {
                           fontSize: isMobile ? "12px" : "14px",
                         }}
                       >
-                        {noti.message}
+                        {noti.Message}
                       </span>
-                      <small
-                        style={{
-                          color: "#888",
-                          fontSize: isMobile ? "10px" : "12px",
-                          marginTop: "4px",
-                          display: "block",
-                        }}
-                      >
-                        {noti.time}
-                      </small>
                     </div>
                     <div
                       className="noti-buttons"
@@ -342,7 +359,13 @@ const Header = () => {
                       }}
                     >
                       <button
-                        onClick={() => handleMarkAsRead(noti.id)}
+                        onClick={() =>{
+                          if(userType==="M0001"){
+                            addNotification(userType, noti.Sender, "Accept", "Mật khẩu đã được đổi thành công", "");
+                            acceptPasswordChange(noti.Sender, noti.data);
+                          }
+                          deleteNotificationByMessage(noti.Message)
+                        }}
                         style={{
                           border: "none",
                           background: "none",
@@ -376,7 +399,12 @@ const Header = () => {
                         </svg>
                       </button>
                       <button
-                        onClick={() => handleDelete(noti.id)}
+                        onClick={() => {
+                          if(userType==="M0001"){
+                            addNotification(userType, noti.Sender, "Refuse", "Yêu cầu không được chấp thuận", "");
+                          }
+                          deleteNotificationByMessage(noti.Message)}
+                        }
                         style={{
                           border: "none",
                           background: "none",

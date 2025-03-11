@@ -49,7 +49,7 @@ export class Order {
 export async function createOrder(currentOrder){
   const orderRef = await addDoc(collection(db, "Order"),{
     orderID: currentOrder.orderID,
-    timeCreated: Timestamp.now(),
+    timeCreated: null,
     timeFinished: null,
     userName: null,
     tableNumber: currentOrder.tableNumber,

@@ -1,6 +1,6 @@
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "./firebase";
-const addNotification = async (sender, receiver, type, message) => {
+const addNotification = async (sender, receiver, type, message, data) => {
   if (!sender || !message) {
     throw new Error("Vui lòng điền đầy đủ thông tin!");
   }
@@ -12,6 +12,7 @@ const addNotification = async (sender, receiver, type, message) => {
       Type: type,
       Message: message,
       CreatedAt: serverTimestamp(),
+      data: data
     });
     console.log("Thông báo đã được thêm vào Firestore!");
   } catch (error) {

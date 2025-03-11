@@ -47,3 +47,22 @@ const updatePassword = async (username, currentPassword, newPassword) => {
 };
 
 export default updatePassword;
+export async function acceptPasswordChange(username, newPassword) {
+  try {
+    const accountsRef = collection(db, "Account");
+
+    // Tìm tài khoản theo Username
+    const q = query(accountsRef, where("Username", "==", username));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      throw new Error("Không tìm thấy tài khoản!");
+    }
+    const userDoc = querySnapshot.docs[0]; 
+    await updateDoc(userDoc.ref, { Password: newPassword });
+
+    return "Mật khẩu đã được cập nhật thành công!";
+  } catch (error) {
+    return `Lỗi: ${error.message}`;
+  }
+}
