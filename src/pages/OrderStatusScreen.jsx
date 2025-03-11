@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Header from "../components/Header"; // Giả sử bạn đã có Header component
+import UserProfile from "../backend/userProfile";
 
 const initialOrders = [
   {
@@ -9,8 +10,18 @@ const initialOrders = [
     tableNumber: "Bàn 1",
     totalAmount: 345000,
     items: [
-      { productID: 1, productName: "Pizza Margherita", unitPrice: 150000, quantity: 2 },
-      { productID: 2, productName: "Trà Sữa Trân Châu", unitPrice: 45000, quantity: 1 },
+      {
+        productID: 1,
+        productName: "Pizza Margherita",
+        unitPrice: 150000,
+        quantity: 2,
+      },
+      {
+        productID: 2,
+        productName: "Trà Sữa Trân Châu",
+        unitPrice: 45000,
+        quantity: 1,
+      },
     ],
     paymentMethod: "Tiền mặt",
   },
@@ -21,7 +32,12 @@ const initialOrders = [
     tableNumber: "Bàn 2",
     totalAmount: 195000,
     items: [
-      { productID: 3, productName: "Burger Bò Phô Mai", unitPrice: 120000, quantity: 1 },
+      {
+        productID: 3,
+        productName: "Burger Bò Phô Mai",
+        unitPrice: 120000,
+        quantity: 1,
+      },
       { productID: 4, productName: "Coca Cola", unitPrice: 15000, quantity: 5 },
     ],
     paymentMethod: "Chuyển khoản",
@@ -31,6 +47,8 @@ const initialOrders = [
 const OrderStatusScreen = () => {
   const [orders, setOrders] = useState(initialOrders);
   const [filterStatus, setFilterStatus] = useState("Tất cả");
+  const { userType } = UserProfile();
+  console.log("userTypeeeeee", userType);
 
   const updateOrderStatus = (orderID, newStatus) => {
     setOrders((prevOrders) =>
@@ -41,9 +59,10 @@ const OrderStatusScreen = () => {
     alert(`Đã cập nhật trạng thái đơn hàng ${orderID} thành "${newStatus}"`);
   };
 
-  const filteredOrders = filterStatus === "Tất cả"
-    ? orders
-    : orders.filter((order) => order.status === filterStatus);
+  const filteredOrders =
+    filterStatus === "Tất cả"
+      ? orders
+      : orders.filter((order) => order.status === filterStatus);
 
   return (
     <div
@@ -57,7 +76,8 @@ const OrderStatusScreen = () => {
       }}
     >
       <Header />
-      <div style={{ height: "clamp(100px, 10vh, 100px)" }} /> {/* Spacer responsive */}
+      <div style={{ height: "clamp(100px, 10vh, 100px)" }} />{" "}
+      {/* Spacer responsive */}
       <h1
         style={{
           fontSize: "clamp(20px, 5vw, 24px)",
@@ -69,7 +89,6 @@ const OrderStatusScreen = () => {
       >
         Quản lý trạng thái đơn hàng
       </h1>
-
       <div
         style={{
           display: "flex",
@@ -107,7 +126,6 @@ const OrderStatusScreen = () => {
           </button>
         ))}
       </div>
-
       <div className="order-container">
         {/* Tiêu đề cột cho web */}
         <div className="order-header">
@@ -151,24 +169,13 @@ const OrderStatusScreen = () => {
                 <strong>Tổng tiền:</strong>{" "}
                 {order.totalAmount.toLocaleString("vi-VN")} VNĐ
               </div>
-              <div
-                className="order-field"
-                style={{
-                  color: order.status === "Hoàn thành" ? "#4caf50" : "#f44336",
-                  fontWeight: "500",
-                }}
-              >
-                <strong>Trạng thái:</strong> {order.status}
-              </div>
               <div className="order-field">
-                {order.status !== "Hoàn thành" && (
+                {userType.startsWith("C") ? (
                   <button
-                    onClick={() =>
-                      updateOrderStatus(order.orderID, "Hoàn thành")
-                    }
+                    onClick={() => alert(`Chỉnh sửa đơn hàng ${order.orderID}`)}
                     style={{
                       padding: "6px 16px",
-                      backgroundColor: "#4caf50",
+                      backgroundColor: "#2196F3",
                       color: "#fff",
                       border: "none",
                       borderRadius: "4px",
@@ -178,22 +185,72 @@ const OrderStatusScreen = () => {
                       transition: "background-color 0.3s",
                       width: "100%",
                     }}
-                    onMouseOver={(e) =>
-                      (e.target.style.backgroundColor = "#45a049")
-                    }
-                    onMouseOut={(e) =>
-                      (e.target.style.backgroundColor = "#4caf50")
-                    }
                   >
-                    Hoàn thành
+                    Chỉnh sửa
                   </button>
-                )}
+                ) : userType.startsWith("ST") ? (
+                  <>
+                    <button
+                      // onClick={() => confirmOrder(order.orderID)}
+                      style={{
+                        padding: "6px 16px",
+                        backgroundColor: "#4caf50",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "clamp(11px, 2vw, 13px)",
+                        fontWeight: "500",
+                        transition: "background-color 0.3s",
+                        width: "100%",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      Xác nhận
+                    </button>
+                    <button
+                      onClick={() =>
+                        alert(`Chỉnh sửa đơn hàng ${order.orderID}`)
+                      }
+                      style={{
+                        padding: "6px 16px",
+                        backgroundColor: "#2196F3",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "clamp(11px, 2vw, 13px)",
+                        fontWeight: "500",
+                        transition: "background-color 0.3s",
+                        width: "100%",
+                      }}
+                    >
+                      Chỉnh sửa
+                    </button>
+                    <button
+                      onClick={() => alert(`Xóa đơn hàng ${order.orderID}`)}
+                      style={{
+                        padding: "6px 16px",
+                        backgroundColor: "#f44336",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "clamp(11px, 2vw, 13px)",
+                        fontWeight: "500",
+                        transition: "background-color 0.3s",
+                        width: "100%",
+                      }}
+                    >
+                      Xóa
+                    </button>
+                  </>
+                ) : null}
               </div>
             </div>
           ))
         )}
       </div>
-
       {/* CSS Responsive */}
       <style jsx>{`
         /* Bố cục mặc định cho mobile (dọc) */
