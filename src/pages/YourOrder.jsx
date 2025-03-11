@@ -9,7 +9,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import { createOrder } from "../backend/orderObject.js";
+import { confirmOrder, createOrder, getOrderDetail } from "../backend/orderObject.js";
 import UserProfile from "../backend/userProfile";
 
 const YourOrder = () => {
@@ -54,9 +54,6 @@ const YourOrder = () => {
     }
     currentOrders.paymentMethod = paymentMethod;
     createOrder(currentOrders);
-    alert(
-      "Yêu cầu thanh toán của bạn đã được gửi. Vui lòng đợi nhân viên bàn trong giây lát"
-    );
   };
 
   // Hàm toggle hiển thị chi tiết tổng cộng
@@ -384,7 +381,14 @@ const YourOrder = () => {
           if (userType && userType.startsWith("ST")) {
             return (
               <button
-                onClick={() => navigate("/tommitres/Invoice")}
+                onClick={async () => {
+                  await handlePlaceOrder();
+                  await confirmOrder(currentOrders.orderID, userType);
+                  const billData = await getOrderDetail(currentOrders.orderID);
+                  console.log(billData);
+                  navigate("/tommitres/Invoice", { state: { billData } });
+                }
+              }
                 style={{
                   width: "100%",
                   padding: "12px",
@@ -404,7 +408,10 @@ const YourOrder = () => {
           } else {
             return (
               <button
-                onClick={() => navigate("/tommitres/ThankYou")}
+                onClick={async() => {
+                  await handlePlaceOrder();
+                  navigate("/tommitres/ThankYou");
+                }}
                 style={{
                   width: "100%",
                   padding: "12px",
