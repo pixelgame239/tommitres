@@ -126,7 +126,7 @@ const OrderScreen = ({ tableID }) => {
     }
     currentOrders.addProduct(productID, productName, orderQuantity, unitPrice, imageLink);
     currentOrders.calculateTotalPrice();
-    currentOrders.tableNumber = tableID ? `Bàn ${tableID}` : "";
+    currentOrders.tableNumber = tableID ? `Bàn ${tableID}` : "Mang đi";
     console.log(JSON.stringify(currentOrders, null, 2));
   };
 
@@ -168,7 +168,6 @@ const OrderScreen = ({ tableID }) => {
               productName={item.productName}
               unitPrice={item.unitPrice}
               description={item.description}
-              quantity={item.quantity}
               handlecreateOrder={handleCreateOrder}
               style={isMobile ? STYLES.mobileItem : STYLES.desktopItem}
             />
@@ -192,14 +191,12 @@ const OrderScreen = ({ tableID }) => {
               productName={item.productName}
               unitPrice={item.unitPrice}
               description={item.description}
-              quantity={item.quantity}
               handlecreateOrder={handleCreateOrder}
               style={isMobile ? STYLES.mobileItem : STYLES.desktopItem}
             />
           ))}
         </div>
       </section>
-
       {/* Order Button */}
       <button
         onClick={() => {

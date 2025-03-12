@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-
-// Import ảnh local vào component
 import doAn from "../assets/do-an.jpg";
 import duiGaRan from "../assets/dui-ga-ran.png";
 import canhGaRan from "../assets/canh-ga-ran.png";
@@ -12,6 +10,9 @@ import traSuaKhoaiMon from "../assets/tra-sua-khoai-mon.png";
 import traSuaNuong from "../assets/tra-sua-nuong.png";
 import traThaiXanh from "../assets/tra-thai-xanh.png";
 import tranChauDuongDen from "../assets/tran-chau-duong-den.png";
+import { useEffect } from "react";
+import { db } from "../backend/firebase";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 
 // Color constants
 const COLORS = {
@@ -106,8 +107,9 @@ const STYLES = {
   },
 };
 
-const FoodItem = ({ productID, productName, unitPrice, description, quantity, handlecreateOrder }) => {
+const FoodItem = ({ productID, productName, unitPrice, description, handlecreateOrder }) => {
   const [orderQuantity, setOrderQuantity] = useState(0);
+  const [productQuantity, setProductQuantity] = useState();
 
   // Chọn ảnh dựa vào productName
   let productImage;
@@ -142,6 +144,20 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
     default:
       productImage = doAn; // Ảnh mặc định
   }
+    useEffect(() => {
+      const unsubscribe = onSnapshot(query(collection(db, "Product"), where("productID","==", Number(productID))),
+  (snapshot)=>{
+      const thisProduct = snapshot.docs[0];
+      const thisQuantity = thisProduct.data().quantity;
+      setProductQuantity(thisQuantity);
+      console.log("Realtime product");
+      if(orderQuantity>Number(thisQuantity)){
+        setOrderQuantity(thisQuantity);
+        console.log("update when change max");
+      }
+      return()=>unsubscribe();
+  });
+  }, [orderQuantity]);
 
   const handleDecrement = async () => {
     const decreasedQuantity = Math.max(orderQuantity - 1, 0);
@@ -151,12 +167,11 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
 
   const handleIncrement = async () => {
     const increasedQuantity = orderQuantity + 1;
-    if (increasedQuantity <= quantity) {
+    if (increasedQuantity <= productQuantity) {
       setOrderQuantity(increasedQuantity);
       await handlecreateOrder(productID, productName, increasedQuantity, unitPrice, productImage);
     }
   };
-
   return (
     <div style={STYLES.container}>
       {/* Hiển thị ảnh */}
@@ -166,9 +181,8 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
       <p style={STYLES.productName}>{productName}</p>
       <p style={STYLES.description}>{description || ""}</p>
       <p style={STYLES.price}>Giá: {unitPrice.toLocaleString()}đ</p>
-
       {/* Điều khiển số lượng */}
-      {quantity === 0 ? (
+      {productQuantity <= 0 ? (
         <p style={STYLES.outOfStock}>Hết hàng</p>
       ) : (
         <div style={STYLES.quantityContainer}>
@@ -186,10 +200,10 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
           <button
             style={{
               ...STYLES.quantityButton,
-              ...(orderQuantity >= quantity ? STYLES.disabledButton : {}),
+              ...(orderQuantity >= productQuantity ? STYLES.disabledButton : {}),
             }}
             onClick={handleIncrement}
-            disabled={orderQuantity >= quantity}
+            disabled={orderQuantity >= productQuantity}
           >
             +
           </button>
@@ -203,8 +217,6 @@ FoodItem.propTypes = {
   productName: PropTypes.string.isRequired,
   unitPrice: PropTypes.number.isRequired,
   description: PropTypes.string,
-  quantity: PropTypes.number,
-  productID: PropTypes.string.isRequired,
   handlecreateOrder: PropTypes.func.isRequired,
 };
 
