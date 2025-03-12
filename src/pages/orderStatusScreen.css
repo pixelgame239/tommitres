@@ -2,6 +2,7 @@
 .order-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
 }
 
 .order-table th,
@@ -9,20 +10,25 @@
   border: 1px solid black;
   padding: 10px;
   text-align: center;
+  font-size: 16px; /* Kích thước chữ mặc định cho web */
 }
 
+.order-table th {
+  background-color: #f4f4f4;
+}
+
+/* Nút thao tác */
 .confirm-btn,
-.action-btn,
+.edit-btn,
 .delete-btn {
-  width: 100%;
   padding: 6px 12px;
-  margin: 5px 0;
+  margin: 5px 2px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  display: block;
   text-align: center;
+  transition: background-color 0.3s ease;
 }
 
 .confirm-btn {
@@ -30,7 +36,7 @@
   color: white;
 }
 
-.action-btn {
+.edit-btn {
   background-color: #007bff;
   color: white;
 }
@@ -49,10 +55,84 @@
   background-color: #218838;
 }
 
-.action-btn:hover {
+.edit-btn:hover {
   background-color: #0056b3;
 }
 
 .delete-btn:hover {
   background-color: #c82333;
+}
+
+/* Responsive design cho điện thoại: Hiển thị bảng theo dạng dọc */
+@media (max-width: 768px) {
+  .order-table {
+    border: none;
+  }
+
+  /* Ẩn tiêu đề cột */
+  .order-table thead {
+    display: none;
+  }
+
+  /* Chuyển hàng thành dạng khối */
+  .order-table tbody tr {
+    display: block;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+
+  /* Chuyển ô thành dạng khối và hiển thị dạng danh sách */
+  .order-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    border: none;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  /* Thêm nhãn cho mỗi ô dữ liệu */
+  .order-table td:before {
+    content: attr(data-label);
+    font-weight: bold;
+    flex: 1;
+    color: #333;
+  }
+
+  .order-table td:last-child {
+    justify-content: center;
+  }
+
+  /* Đảm bảo layout của action buttons */
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  /* Điều chỉnh kích thước nút trên điện thoại */
+  .confirm-btn,
+  .edit-btn,
+  .delete-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    margin: 3px 1px;
+  }
+
+  /* Điều chỉnh tiêu đề và bộ lọc trạng thái */
+  h1 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  div button {
+    padding: 8px 12px;
+    font-size: 12px;
+    margin: 5px;
+  }
 }

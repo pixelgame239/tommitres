@@ -166,7 +166,7 @@ const Header = () => {
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 10,
-        height: isMobile ? 80 : 100,
+        height: isMobile ? 80 : 85,
       }}
     >
       <h1 style={{ margin: 0 }}>
