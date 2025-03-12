@@ -108,7 +108,7 @@ const STYLES = {
 };
 
 const FoodItem = ({ productID, productName, unitPrice, description, handlecreateOrder }) => {
-  const [orderQuantity, setorderQuantity] = useState(0);
+  const [orderQuantity, setOrderQuantity] = useState(0);
   const [productQuantity, setProductQuantity] = useState();
 
   // Chọn ảnh dựa vào productName
@@ -152,7 +152,7 @@ const FoodItem = ({ productID, productName, unitPrice, description, handlecreate
       setProductQuantity(thisQuantity);
       console.log("Realtime product");
       if(orderQuantity>Number(thisQuantity)){
-        setorderQuantity(thisQuantity);
+        setOrderQuantity(thisQuantity);
         console.log("update when change max");
       }
       return()=>unsubscribe();

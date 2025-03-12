@@ -23,8 +23,7 @@ const YourOrder = () => {
   const { userType } = UserProfile();
   const navigate = useNavigate();
 
-  console.log("userType from your order", userType);
-
+  console.log(`table: ${JSON.stringify(currentOrders)}`);
   const handlePlaceOrder = async () => {
     if (!paymentMethod) {
       alert("Vui lòng chọn phương thức thanh toán!");
@@ -54,6 +53,7 @@ const YourOrder = () => {
     }
     currentOrders.paymentMethod = paymentMethod;
     createOrder(currentOrders);
+    console.log(currentOrders);
   };
 
   // Hàm toggle hiển thị chi tiết tổng cộng
@@ -385,6 +385,7 @@ const YourOrder = () => {
                   await handlePlaceOrder();
                   await confirmOrder(currentOrders.orderID, userType);
                   const billData = await getOrderDetail(currentOrders.orderID);
+                  console.log(billData);
                   navigate("/tommitres/Invoice", { state: { billData } });
                 }
               }
