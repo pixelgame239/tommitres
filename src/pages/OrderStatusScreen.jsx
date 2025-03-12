@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import Header from "../components/Header";
 import UserProfile from "../backend/userProfile";
 import { db } from "../backend/firebase";
@@ -13,48 +7,31 @@ import "./orderStatusScreen.css";
 
 const OrderStatusScreen = () => {
   const [orders, setOrders] = useState([]);
-  const [productsMap, setProductsMap] = useState({});
   const [filterStatus, setFilterStatus] = useState("Tất cả");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userType } = UserProfile();
-  const [editingOrder, setEditingOrder] = useState(null);
-
-  // ✅ Lấy danh sách sản phẩm từ Firestore
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const productsCollection = collection(db, "Product");
-        const productSnapshot = await getDocs(productsCollection);
-        const productMap = {};
-        productSnapshot.docs.forEach((doc) => {
-          const data = doc.data();
-          productMap[data.productID] = data.productName; // Map productID -> productName
-        });
-        setProductsMap(productMap);
-      } catch (err) {
-        console.error("❌ Lỗi khi lấy sản phẩm:", err);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   // ✅ Lấy danh sách đơn hàng từ Firestore
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        console.log("📌 Đang lấy danh sách đơn hàng từ Firestore...");
         const ordersCollection = collection(db, "Order");
         const orderSnapshot = await getDocs(ordersCollection);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const orderList = orderSnapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-            buyDate: doc.data().buyDate?.toDate() || null,
-          }))
+        let orderList = orderSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          buyDate: doc.data().buyDate?.toDate() || null,
+        }));
+
+        console.log("✅ Danh sách đơn hàng lấy được:", orderList);
+
+        // Lọc đơn hàng theo ngày hôm nay
+        orderList = orderList
           .filter((order) => {
             if (!order.buyDate) return false;
             return (
@@ -64,6 +41,11 @@ const OrderStatusScreen = () => {
             );
           })
           .sort((a, b) => b.buyDate - a.buyDate);
+
+        console.log(
+          "📌 Danh sách đơn hàng sau khi lọc theo ngày hôm nay:",
+          orderList
+        );
 
         setOrders(orderList);
       } catch (err) {
@@ -80,11 +62,19 @@ const OrderStatusScreen = () => {
   // ✅ Xóa đơn hàng
   const handleDeleteOrder = async (orderId) => {
     if (!window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) return;
+
+    console.log(`🗑️ Đang xóa đơn hàng có ID: ${orderId}`);
     try {
       await deleteDoc(doc(db, "Order", orderId));
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => order.id !== orderId)
-      );
+
+      setOrders((prevOrders) => {
+        const updatedOrders = prevOrders.filter(
+          (order) => order.id !== orderId
+        );
+        console.log("✅ Danh sách đơn hàng sau khi xóa:", updatedOrders);
+        return updatedOrders;
+      });
+
       alert("Đã hủy đơn hàng thành công!");
     } catch (error) {
       console.error("❌ Lỗi khi xóa đơn hàng:", error);
@@ -95,10 +85,16 @@ const OrderStatusScreen = () => {
   if (loading) return <div>Đang tải dữ liệu...</div>;
   if (error) return <div>Lỗi: {error}</div>;
 
+  // ✅ Lọc đơn hàng theo trạng thái
   const filteredOrders =
     filterStatus === "Tất cả"
       ? orders
       : orders.filter((order) => order.status === filterStatus);
+
+  console.log(
+    `📌 Danh sách đơn hàng sau khi lọc theo trạng thái "${filterStatus}":`,
+    filteredOrders
+  );
 
   return (
     <div>
@@ -122,7 +118,7 @@ const OrderStatusScreen = () => {
             <th>Bàn</th>
             <th>Trạng thái</th>
             <th>Phương thức thanh toán</th>
-            <th>Sản phẩm</th> {/* ✅ Cột mới */}
+            <th>Sản phẩm</th>
             <th>Tổng tiền</th>
             <th>Ngày mua</th>
             <th>Thao tác</th>
@@ -142,15 +138,11 @@ const OrderStatusScreen = () => {
                 <td>{order.status}</td>
                 <td>{order.paymentMethod}</td>
                 <td>
-                  <ul>
-                    {order.products?.map((item, index) => (
-                      <li key={index}>
-                        {item.orderQuantity} x{" "}
-                        {productsMap[item.productID] || "Không xác định"} (
-                        {item.singleProductPrice?.toLocaleString("vi-VN")} VNĐ)
-                      </li>
-                    ))}
-                  </ul>
+                  {order.products?.map((item, index) => (
+                    <div key={index}>
+                      {item.productName} x {item.orderQuantity}
+                    </div>
+                  ))}
                 </td>
                 <td>{order.totalPrice?.toLocaleString("vi-VN")} VNĐ</td>
                 <td>
@@ -169,7 +161,7 @@ const OrderStatusScreen = () => {
                       </button>
                       <button
                         className="edit-btn"
-                        onClick={() => setEditingOrder(order)}
+                        onClick={() => alert(`Chỉnh sửa đơn hàng: ${order.id}`)}
                       >
                         Chỉnh sửa
                       </button>
