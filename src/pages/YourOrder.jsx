@@ -154,7 +154,7 @@ const YourOrder = () => {
                       fontSize: "clamp(12px, 2.5vw, 14px)",
                     }}
                   >
-                    {item.unitPrice.toLocaleString("vi-VN")} VNĐ
+                    {item.unitPrice.toLocaleString("vi-VN")} VNĐ x {item.orderQuantity}
                   </p>
                 </div>
               </div>
@@ -385,7 +385,6 @@ const YourOrder = () => {
                   await handlePlaceOrder();
                   await confirmOrder(currentOrders.orderID, userType);
                   const billData = await getOrderDetail(currentOrders.orderID);
-                  console.log(billData);
                   navigate("/tommitres/Invoice", { state: { billData } });
                 }
               }

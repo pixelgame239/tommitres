@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-
-// Import ảnh local vào component
 import doAn from "../assets/do-an.jpg";
 import duiGaRan from "../assets/dui-ga-ran.png";
 import canhGaRan from "../assets/canh-ga-ran.png";
@@ -12,9 +10,14 @@ import traSuaKhoaiMon from "../assets/tra-sua-khoai-mon.png";
 import traSuaNuong from "../assets/tra-sua-nuong.png";
 import traThaiXanh from "../assets/tra-thai-xanh.png";
 import tranChauDuongDen from "../assets/tran-chau-duong-den.png";
+import { useEffect } from "react";
+import { db } from "../backend/firebase";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 
-const FoodItem = ({ productID, productName, unitPrice, description, quantity, handlecreateOrder }) => {
+
+const FoodItem = ({ productID, productName, unitPrice, description, handlecreateOrder }) => {
   const [orderQuantity, setorderQuantity] = useState(0);
+  const [productQuantity, setProductQuantity] = useState();
   // Chọn ảnh dựa vào productName
   let productImage;
   if (productName === "Đùi gà rán") {
@@ -38,7 +41,20 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
   } else {
     productImage = doAn; // Ảnh mặc định nếu không khớp
   }
-
+    useEffect(() => {
+      const unsubscribe = onSnapshot(query(collection(db, "Product"), where("productID","==", Number(productID))),
+  (snapshot)=>{
+      const thisProduct = snapshot.docs[0];
+      const thisQuantity = thisProduct.data().quantity;
+      setProductQuantity(thisQuantity);
+      console.log("Realtime product");
+      if(orderQuantity>Number(thisQuantity)){
+        setorderQuantity(thisQuantity);
+        console.log("update when change max");
+      }
+      return()=>unsubscribe();
+  });
+  }, [orderQuantity]);
   return (
     <div
       style={{
@@ -75,7 +91,7 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
       {/* Tăng kích thước chữ cho giá */}
       <p style={{ fontSize: "1.2rem" }}>Giá: {unitPrice.toLocaleString()}đ</p>
       <div>
-        {quantity===0?
+        {productQuantity<=0?
         (<p style={{fontSize:20, color:"red", textAlign:"center"}}>Hết hàng</p>)
         : (<><button
           style={{
@@ -108,7 +124,7 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
               await handlecreateOrder(productID, productName, increaseQuantity, unitPrice, productImage);
             }
           }
-          disabled={orderQuantity===quantity}
+          disabled={orderQuantity===productQuantity}
         >
           ➕
         </button>
@@ -122,8 +138,7 @@ const FoodItem = ({ productID, productName, unitPrice, description, quantity, ha
 FoodItem.propTypes = {
   productName: PropTypes.string.isRequired,
   unitPrice: PropTypes.number.isRequired,
-  description: PropTypes.string,
-  quantity: PropTypes.number,
+  description: PropTypes.string
 };
 
 export default FoodItem;

@@ -71,7 +71,6 @@ const OrderScreen = ({ tableID }) => {
             productName={item.productName}
             unitPrice={item.unitPrice}
             description={item.description}
-            quantity = {item.quantity}
             handlecreateOrder = {handlecreateOrder}
           />
         ))}
@@ -96,7 +95,6 @@ const OrderScreen = ({ tableID }) => {
             productName={item.productName}
             unitPrice={item.unitPrice}
             description={item.description}
-            quantity = {item.quantity}
             handlecreateOrder = {handlecreateOrder}
           />
         ))}

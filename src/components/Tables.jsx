@@ -4,7 +4,7 @@ import table_full from "../assets/table_full.png"
 import { Table } from "../backend/tableData";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, onSnapshot, deleteDoc, doc, getDocs, orderBy, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../backend/firebase";
 
 function Tables(tabledata) {
@@ -42,7 +42,7 @@ function Tables(tabledata) {
         <img className = "table-display" src= {status ? table_full : table_empty}></img>
         <p>Trạng thái:</p>
         <p className={status ?"table-status-full":"table-status"}>{status ? "Đang sử dụng" : "Trống"}</p>
-        {status?( <button className="table-status-controller" onClick={handleStatus}>Đổi trạng thái</button>):null}
+        <button className="table-status-controller" onClick={handleStatus}>Đổi trạng thái</button>
         <button className="table-order" onClick={handleOrder}>Gọi món</button>
     </div>
 }
