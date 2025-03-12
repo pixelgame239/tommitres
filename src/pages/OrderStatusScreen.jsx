@@ -134,23 +134,23 @@ const OrderStatusScreen = () => {
           ) : (
             filteredOrders.map((order) => (
               <tr key={order.id}>
-                <td>{order.tableNumber}</td>
-                <td>{order.status}</td>
-                <td>{order.paymentMethod}</td>
-                <td>
+                <td data-label="Bàn:">{order.tableNumber}</td>
+                <td data-label="Trạng thái:">{order.status}</td>
+                <td data-label="Phương thức thanh toán:">{order.paymentMethod}</td>
+                <td data-label="Sản phẩm:">
                   {order.products?.map((item, index) => (
                     <div key={index}>
                       {item.productName} x {item.orderQuantity}
                     </div>
                   ))}
                 </td>
-                <td>{order.totalPrice?.toLocaleString("vi-VN")} VNĐ</td>
-                <td>
+                <td data-label="Tổng tiền:">{order.totalPrice?.toLocaleString("vi-VN")} VNĐ</td>
+                <td data-label="Ngày mua:">
                   {order.buyDate
                     ? order.buyDate.toLocaleString("vi-VN")
                     : "Không có dữ liệu"}
                 </td>
-                <td>
+                <td data-label="Thao tác:">
                   {order.status !== "Hoàn thành" && (
                     <div className="action-buttons">
                       <button
