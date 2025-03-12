@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "../backend/firebase";
 import "./orderStatusScreen.css";
 
@@ -11,62 +11,56 @@ const RevenueExcelLikeScreen = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        console.log("📌 Đang lấy danh sách đơn hàng từ Firestore...");
-        const ordersCollection = collection(db, "Order");
-        const orderSnapshot = await getDocs(ordersCollection);
+    console.log("📡 Đang lắng nghe dữ liệu đơn hàng từ Firestore...");
+    const ordersCollection = collection(db, "Order");
 
-        let orderList = orderSnapshot.docs.map((doc) => {
-          const orderData = doc.data();
-          return {
-            id: doc.id,
-            ...orderData,
-            buyDate: orderData.buyDate?.toDate() || null, // Chuyển timestamp thành Date
-          };
+    // Lắng nghe thay đổi dữ liệu theo thời gian thực
+    const unsubscribe = onSnapshot(ordersCollection, (orderSnapshot) => {
+      let orderList = orderSnapshot.docs.map((doc) => {
+        const orderData = doc.data();
+        return {
+          id: doc.id,
+          ...orderData,
+          buyDate: orderData.buyDate?.toDate() || null, // Chuyển timestamp thành Date
+        };
+      });
+
+      orderList = orderList
+        .filter((order) => order.status === "Hoàn thành")
+        .sort((a, b) => b.buyDate - a.buyDate);
+
+      // Nhóm đơn hàng theo ngày và tính tổng doanh thu
+      const groupedOrders = [];
+      const revenueByDate = {};
+
+      orderList.forEach((order) => {
+        if (!order.buyDate) return;
+        const orderDate = order.buyDate.toISOString().split("T")[0];
+
+        if (!revenueByDate[orderDate]) {
+          revenueByDate[orderDate] = { total: 0, orders: [] };
+        }
+        revenueByDate[orderDate].total += order.totalPrice || 0;
+        revenueByDate[orderDate].orders.push(order);
+      });
+
+      Object.keys(revenueByDate).forEach((date) => {
+        groupedOrders.push(...revenueByDate[date].orders);
+        groupedOrders.push({
+          id: `total-${date}`,
+          isTotalRow: true,
+          buyDate: date,
+          totalRevenue: revenueByDate[date].total,
         });
+      });
 
-        orderList = orderList
-          .filter((order) => order.status === "Hoàn thành")
-          .sort((a, b) => b.buyDate - a.buyDate);
+      setOrders(groupedOrders);
+      setFilteredOrders(groupedOrders);
+      setLoading(false);
+    });
 
-        // Nhóm đơn hàng theo ngày và tính tổng doanh thu
-        const groupedOrders = [];
-        const revenueByDate = {};
-
-        orderList.forEach((order) => {
-          if (!order.buyDate) return;
-          const orderDate = order.buyDate.toISOString().split("T")[0];
-
-          if (!revenueByDate[orderDate]) {
-            revenueByDate[orderDate] = { total: 0, orders: [] };
-          }
-          revenueByDate[orderDate].total += order.totalPrice || 0;
-          revenueByDate[orderDate].orders.push(order);
-        });
-
-        // Sắp xếp lại danh sách để mỗi nhóm ngày có dòng tổng doanh thu ở cuối
-        Object.keys(revenueByDate).forEach((date) => {
-          groupedOrders.push(...revenueByDate[date].orders);
-          groupedOrders.push({
-            id: `total-${date}`,
-            isTotalRow: true,
-            buyDate: date,
-            totalRevenue: revenueByDate[date].total,
-          });
-        });
-
-        setOrders(groupedOrders);
-        setFilteredOrders(groupedOrders); // Ban đầu hiển thị tất cả
-      } catch (err) {
-        console.error("❌ Lỗi khi lấy đơn hàng:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
+    // Hủy lắng nghe khi component bị unmount
+    return () => unsubscribe();
   }, []);
 
   // Cập nhật danh sách khi searchDate thay đổi
