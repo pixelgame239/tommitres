@@ -138,7 +138,7 @@ const FoodItem = ({ productID, productName, unitPrice, description, handlecreate
     case "Trà sữa nướng":
       productImage = traSuaNuong;
       break;
-    case "sữa tươi trân châu đường đen":
+    case "Sữa tươi trân châu đường đen":
       productImage = tranChauDuongDen;
       break;
     default:
@@ -146,13 +146,14 @@ const FoodItem = ({ productID, productName, unitPrice, description, handlecreate
   }
     useEffect(() => {
       const unsubscribe = onSnapshot(query(collection(db, "Product"), where("productID","==", Number(productID))),
-  (snapshot)=>{
+  async (snapshot)=>{
       const thisProduct = snapshot.docs[0];
       const thisQuantity = thisProduct.data().quantity;
       setProductQuantity(thisQuantity);
       console.log("Realtime product");
       if(orderQuantity>Number(thisQuantity)){
         setOrderQuantity(thisQuantity);
+        await handlecreateOrder(productID, productName, thisQuantity, unitPrice, productImage);
         console.log("update when change max");
       }
       return()=>unsubscribe();

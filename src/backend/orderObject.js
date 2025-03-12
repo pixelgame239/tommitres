@@ -49,7 +49,7 @@ export class Order {
 export async function createOrder(currentOrder){
   const orderRef = await addDoc(collection(db, "Order"),{
     orderID: currentOrder.orderID,
-    buyDate: null,
+    buyDate: Timestamp.now().toDate(),
     status: "Đang xử lý",
     userName: null,
     tableNumber: currentOrder.tableNumber,
