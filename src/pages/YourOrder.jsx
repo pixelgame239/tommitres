@@ -23,8 +23,7 @@ const YourOrder = () => {
   const { userType } = UserProfile();
   const navigate = useNavigate();
 
-  console.log("userType from your order", userType);
-
+  console.log(`table: ${JSON.stringify(currentOrders)}`);
   const handlePlaceOrder = async () => {
     if (!paymentMethod) {
       alert("Vui lòng chọn phương thức thanh toán!");
@@ -54,6 +53,7 @@ const YourOrder = () => {
     }
     currentOrders.paymentMethod = paymentMethod;
     createOrder(currentOrders);
+    console.log(currentOrders);
   };
 
   // Hàm toggle hiển thị chi tiết tổng cộng
@@ -154,7 +154,7 @@ const YourOrder = () => {
                       fontSize: "clamp(12px, 2.5vw, 14px)",
                     }}
                   >
-                    {item.unitPrice.toLocaleString("vi-VN")} VNĐ
+                    {item.unitPrice.toLocaleString("vi-VN")} VNĐ x {item.orderQuantity}
                   </p>
                 </div>
               </div>
