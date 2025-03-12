@@ -168,7 +168,6 @@ const OrderScreen = ({ tableID }) => {
               productName={item.productName}
               unitPrice={item.unitPrice}
               description={item.description}
-              quantity={item.quantity}
               handlecreateOrder={handleCreateOrder}
               style={isMobile ? STYLES.mobileItem : STYLES.desktopItem}
             />
@@ -192,14 +191,12 @@ const OrderScreen = ({ tableID }) => {
               productName={item.productName}
               unitPrice={item.unitPrice}
               description={item.description}
-              quantity={item.quantity}
               handlecreateOrder={handleCreateOrder}
               style={isMobile ? STYLES.mobileItem : STYLES.desktopItem}
             />
           ))}
         </div>
       </section>
-
       {/* Order Button */}
       <button
         onClick={() => {

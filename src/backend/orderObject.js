@@ -50,7 +50,7 @@ export async function createOrder(currentOrder){
   const orderRef = await addDoc(collection(db, "Order"),{
     orderID: currentOrder.orderID,
     buyDate: null,
-    status: null,
+    status: "Đang xử lý",
     userName: null,
     tableNumber: currentOrder.tableNumber,
     paymentMethod: currentOrder.paymentMethod==="cash"?"Tiền mặt":"Chuyển khoản",
@@ -75,7 +75,7 @@ export async function confirmOrder(orderID, userType){
   const dataRef = doc(db, "Order", IDdata.id);
   const currentDate = Timestamp.now().toDate();
   try {
-    await updateDoc(dataRef, { buyDate: currentDate, status: "Đang xử lý", userName: userType });
+    await updateDoc(dataRef, { buyDate: currentDate, status: "Đã xác nhận", userName: userType });
     console.log("Updated buydate and status");
   } catch (error) {
     console.log(error);
