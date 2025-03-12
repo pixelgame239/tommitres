@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import Header from "../components/Header";
 import UserProfile from "../backend/userProfile";
 import { db } from "../backend/firebase";
 import "./orderStatusScreen.css";
+import { confirmOrder } from "../backend/orderObject";
 
 const OrderStatusScreen = () => {
   const [orders, setOrders] = useState([]);
@@ -14,40 +15,40 @@ const OrderStatusScreen = () => {
 
   // ✅ Lấy danh sách đơn hàng từ Firestore
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrders = () => {
       try {
         console.log("📌 Đang lấy danh sách đơn hàng từ Firestore...");
         const ordersCollection = collection(db, "Order");
-        const orderSnapshot = await getDocs(ordersCollection);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
 
-        let orderList = orderSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          buyDate: doc.data().buyDate?.toDate() || null,
-        }));
+        const unsubscribe = onSnapshot(ordersCollection, (orderSnapshot) => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          let orderList = orderSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            buyDate: doc.data().buyDate?.toDate() || null,
+          }));
 
-        console.log("✅ Danh sách đơn hàng lấy được:", orderList);
+          console.log("✅ Danh sách đơn hàng lấy được:", orderList);
 
-        // Lọc đơn hàng theo ngày hôm nay
-        orderList = orderList
-          .filter((order) => {
-            if (!order.buyDate) return false;
-            return (
-              order.buyDate.getFullYear() === today.getFullYear() &&
-              order.buyDate.getMonth() === today.getMonth() &&
-              order.buyDate.getDate() === today.getDate()
-            );
-          })
-          .sort((a, b) => b.buyDate - a.buyDate);
+          // Lọc đơn hàng theo ngày hôm nay
+          orderList = orderList
+            .filter((order) => {
+              if (!order.buyDate) return false;
+              return (
+                order.buyDate.getFullYear() === today.getFullYear() &&
+                order.buyDate.getMonth() === today.getMonth() &&
+                order.buyDate.getDate() === today.getDate()
+              );
+            })
+            .sort((a, b) => b.buyDate - a.buyDate);
 
-        console.log(
-          "📌 Danh sách đơn hàng sau khi lọc theo ngày hôm nay:",
-          orderList
-        );
+          console.log("📌 Danh sách đơn hàng sau khi lọc theo ngày hôm nay:", orderList);
 
-        setOrders(orderList);
+          setOrders(orderList);
+        });
+
+        return () => unsubscribe();
       } catch (err) {
         console.error("❌ Lỗi khi lấy đơn hàng:", err);
         setError(err.message);
@@ -68,9 +69,7 @@ const OrderStatusScreen = () => {
       await deleteDoc(doc(db, "Order", orderId));
 
       setOrders((prevOrders) => {
-        const updatedOrders = prevOrders.filter(
-          (order) => order.id !== orderId
-        );
+        const updatedOrders = prevOrders.filter((order) => order.id !== orderId);
         console.log("✅ Danh sách đơn hàng sau khi xóa:", updatedOrders);
         return updatedOrders;
       });
@@ -99,11 +98,11 @@ const OrderStatusScreen = () => {
   return (
     <div>
       <Header />
-      <h1>Quản lý trạng thái đơn hàng - Hôm nay</h1>
+      <h1 style={{marginTop:80}}>Quản lý trạng thái đơn hàng - Hôm nay</h1>
 
       {/* Bộ lọc trạng thái đơn hàng */}
-      <div>
-        {["Tất cả", "Đang xử lý", "Hoàn thành"].map((status) => (
+      <div style={{top}}>
+        {["Tất cả", "Đang xử lý", "Sẵn sàng giao"].map((status) => (
           <button key={status} onClick={() => setFilterStatus(status)}>
             {status}
           </button>
@@ -153,12 +152,14 @@ const OrderStatusScreen = () => {
                 <td data-label="Thao tác:">
                   {order.status !== "Hoàn thành" && (
                     <div className="action-buttons">
+                      {order.status !== "Đã xác nhận"?
                       <button
                         className="confirm-btn"
-                        onClick={() => alert(`Xác nhận đơn hàng: ${order.id}`)}
+                        onClick={() => confirmOrder(order.orderID, userType)}
                       >
                         Xác nhận
                       </button>
+                      :null}
                       <button
                         className="edit-btn"
                         onClick={() => alert(`Chỉnh sửa đơn hàng: ${order.id}`)}
