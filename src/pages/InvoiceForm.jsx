@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../backend/firebase";
 
 const Invoice = () => {
-  const [table, setTable] = useState();
   const location = useLocation();
   const { billData } = location.state || {};
   const navigate = useNavigate();

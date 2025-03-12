@@ -126,7 +126,7 @@ const OrderScreen = ({ tableID }) => {
     }
     currentOrders.addProduct(productID, productName, orderQuantity, unitPrice, imageLink);
     currentOrders.calculateTotalPrice();
-    currentOrders.tableNumber = tableID ? `Bàn ${tableID}` : "";
+    currentOrders.tableNumber = tableID ? `Bàn ${tableID}` : "Mang đi";
     console.log(JSON.stringify(currentOrders, null, 2));
   };
 
