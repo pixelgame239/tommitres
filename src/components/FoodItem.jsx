@@ -14,32 +14,135 @@ import { useEffect } from "react";
 import { db } from "../backend/firebase";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 
+// Color constants
+const COLORS = {
+  white: "#ffffff",
+  textDark: "#333",
+  primary: "#ff5722", // Màu cam nhẹ cho nút
+  disabled: "#ccc",
+};
+
+// Style definitions
+const STYLES = {
+  container: {
+    margin: 10,
+    textAlign: "center",
+    border: "1px solid #ddd",
+    padding: 10,
+    borderRadius: 10,
+    minHeight: "350px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  image: {
+    width: "100%",
+    height: "180px",
+    borderRadius: 10,
+    maxWidth: "400px",
+    objectFit: "cover",
+  },
+  productName: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    margin: "10px 0 5px",
+  },
+  description: {
+    fontSize: "1rem",
+    fontStyle: "italic",
+    margin: "0 0 10px",
+    color: "#666",
+  },
+  price: {
+    fontSize: "1.2rem",
+    margin: "0 0 10px",
+  },
+  outOfStock: {
+    fontSize: "1.25rem",
+    color: "red",
+    textAlign: "center",
+    margin: "10px 0",
+  },
+  quantityContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    marginTop: "10px",
+  },
+  quantityButton: {
+    width: "30px",
+    height: "30px",
+    borderRadius: "50%",
+    border: `2px solid ${COLORS.primary}`,
+    background: COLORS.white,
+    color: COLORS.primary,
+    fontSize: "1.2rem",
+    fontWeight: "bold",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    transition: "background 0.2s ease, color 0.2s ease",
+    ":hover": {
+      background: COLORS.primary,
+      color: COLORS.white,
+    },
+  },
+  disabledButton: {
+    border: `2px solid ${COLORS.disabled}`,
+    color: COLORS.disabled,
+    cursor: "not-allowed",
+    ":hover": {
+      background: COLORS.white,
+      color: COLORS.disabled,
+    },
+  },
+  quantityText: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    minWidth: "30px",
+    textAlign: "center",
+    color: COLORS.textDark,
+  },
+};
 
 const FoodItem = ({ productID, productName, unitPrice, description, handlecreateOrder }) => {
   const [orderQuantity, setorderQuantity] = useState(0);
   const [productQuantity, setProductQuantity] = useState();
+
   // Chọn ảnh dựa vào productName
   let productImage;
-  if (productName === "Đùi gà rán") {
-    productImage = duiGaRan;
-  } else if (productName === "Kim chi") {
-    productImage = kimChi;
-  } else if (productName === "Cánh gà rán") {
-    productImage = canhGaRan;
-  } else if (productName === "Cánh gà sốt cay") {
-    productImage = canhGaSotCay;
-  } else if (productName === "Đùi gà sốt cay") {
-    productImage = duiGaSotCay;
-  } else if (productName === "Trà thái xanh") {
-    productImage = traThaiXanh;
-  } else if (productName === "Trà sữa khoai môn tươi") {
-    productImage = traSuaKhoaiMon;
-  } else if (productName === "Trà sữa nướng") {
-    productImage = traSuaNuong;
-  } else if (productName === "sữa tươi trân châu đường đen") {
-    productImage = tranChauDuongDen;
-  } else {
-    productImage = doAn; // Ảnh mặc định nếu không khớp
+  switch (productName) {
+    case "Đùi gà rán":
+      productImage = duiGaRan;
+      break;
+    case "Kim chi":
+      productImage = kimChi;
+      break;
+    case "Cánh gà rán":
+      productImage = canhGaRan;
+      break;
+    case "Cánh gà sốt cay":
+      productImage = canhGaSotCay;
+      break;
+    case "Đùi gà sốt cay":
+      productImage = duiGaSotCay;
+      break;
+    case "Trà thái xanh":
+      productImage = traThaiXanh;
+      break;
+    case "Trà sữa khoai môn tươi":
+      productImage = traSuaKhoaiMon;
+      break;
+    case "Trà sữa nướng":
+      productImage = traSuaNuong;
+      break;
+    case "sữa tươi trân châu đường đen":
+      productImage = tranChauDuongDen;
+      break;
+    default:
+      productImage = doAn; // Ảnh mặc định
   }
     useEffect(() => {
       const unsubscribe = onSnapshot(query(collection(db, "Product"), where("productID","==", Number(productID))),
@@ -55,82 +158,57 @@ const FoodItem = ({ productID, productName, unitPrice, description, handlecreate
       return()=>unsubscribe();
   });
   }, [orderQuantity]);
-  return (
-    <div
-      style={{
-        margin: 10,
-        textAlign: "center",
-        border: "1px solid #ddd",
-        padding: 10,
-        borderRadius: 10,
-        minHeight: "350px", // Đảm bảo chiều cao tối thiểu đồng nhất
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between", // Giữ các phần tử cách đều nhau
-      }}
-    >
-      {/* Hiển thị ảnh với kích thước thay đổi tùy vào màn hình */}
-      <img
-        src={productImage}
-        alt={productName}
-        style={{
-          width: "100%",
-          height: "180px", // Đặt chiều cao cố định cho ảnh
-          borderRadius: 10,
-          maxWidth: "400px",
-          objectFit: "cover",
-        }}
-      />
 
-      {/* Tăng kích thước chữ cho tên sản phẩm */}
-      <p style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{productName}</p>
-      {/* Tăng kích thước chữ cho mô tả */}
-      <p style={{ fontSize: "1rem", fontStyle: "italic" }}>
-        {description || ""}
-      </p>
-      {/* Tăng kích thước chữ cho giá */}
-      <p style={{ fontSize: "1.2rem" }}>Giá: {unitPrice.toLocaleString()}đ</p>
-      <div>
-        {productQuantity<=0?
-        (<p style={{fontSize:20, color:"red", textAlign:"center"}}>Hết hàng</p>)
-        : (<><button
-          style={{
-            marginRight: 10,
-            backgroundColor: "lightblue",
-            padding: 10,
-            fontSize: "1.2rem",
-          }}
-          onClick={async () => {
-            const decreasedQuantity =Math.max(orderQuantity - 1, 0);
-            setorderQuantity(decreasedQuantity);
-            await handlecreateOrder(productID, productName, decreasedQuantity, unitPrice, productImage);
-          }
-          }
-        >
-          ➖
-        </button>
-        <strong style={{ fontSize: "1.5rem" }}>{orderQuantity}</strong>
-        <button
-          style={{
-            marginLeft: 10,
-            backgroundColor: "lightblue",
-            padding: 10,
-            fontSize: "1.2rem",
-          }}
-          onClick={ async () => 
-            {
-              const increaseQuantity = orderQuantity+1;
-              setorderQuantity(increaseQuantity);
-              await handlecreateOrder(productID, productName, increaseQuantity, unitPrice, productImage);
-            }
-          }
-          disabled={orderQuantity===productQuantity}
-        >
-          ➕
-        </button>
-        </>)
-      }
-      </div>
+  const handleDecrement = async () => {
+    const decreasedQuantity = Math.max(orderQuantity - 1, 0);
+    setOrderQuantity(decreasedQuantity);
+    await handlecreateOrder(productID, productName, decreasedQuantity, unitPrice, productImage);
+  };
+
+  const handleIncrement = async () => {
+    const increasedQuantity = orderQuantity + 1;
+    if (increasedQuantity <= productQuantity) {
+      setOrderQuantity(increasedQuantity);
+      await handlecreateOrder(productID, productName, increasedQuantity, unitPrice, productImage);
+    }
+  };
+  return (
+    <div style={STYLES.container}>
+      {/* Hiển thị ảnh */}
+      <img src={productImage} alt={productName} style={STYLES.image} />
+
+      {/* Thông tin sản phẩm */}
+      <p style={STYLES.productName}>{productName}</p>
+      <p style={STYLES.description}>{description || ""}</p>
+      <p style={STYLES.price}>Giá: {unitPrice.toLocaleString()}đ</p>
+      {/* Điều khiển số lượng */}
+      {productQuantity <= 0 ? (
+        <p style={STYLES.outOfStock}>Hết hàng</p>
+      ) : (
+        <div style={STYLES.quantityContainer}>
+          <button
+            style={{
+              ...STYLES.quantityButton,
+              ...(orderQuantity === 0 ? STYLES.disabledButton : {}),
+            }}
+            onClick={handleDecrement}
+            disabled={orderQuantity === 0}
+          >
+            -
+          </button>
+          <span style={STYLES.quantityText}>{orderQuantity}</span>
+          <button
+            style={{
+              ...STYLES.quantityButton,
+              ...(orderQuantity >= productQuantity ? STYLES.disabledButton : {}),
+            }}
+            onClick={handleIncrement}
+            disabled={orderQuantity >= productQuantity}
+          >
+            +
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -138,7 +216,8 @@ const FoodItem = ({ productID, productName, unitPrice, description, handlecreate
 FoodItem.propTypes = {
   productName: PropTypes.string.isRequired,
   unitPrice: PropTypes.number.isRequired,
-  description: PropTypes.string
+  description: PropTypes.string,
+  handlecreateOrder: PropTypes.func.isRequired,
 };
 
 export default FoodItem;
