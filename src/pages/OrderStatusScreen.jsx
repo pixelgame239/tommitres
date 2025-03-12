@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   collection,
-  getDocs,
   deleteDoc,
   doc,
   onSnapshot,
@@ -10,7 +10,7 @@ import Header from "../components/Header";
 import UserProfile from "../backend/userProfile";
 import { db } from "../backend/firebase";
 import "./orderStatusScreen.css";
-import { confirmOrder } from "../backend/orderObject";
+import { confirmOrder, editProduct } from "../backend/orderObject";
 import {
   changeStatusToSuccess,
   markOrderAsReady,
@@ -22,6 +22,7 @@ const OrderStatusScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userType } = UserProfile();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = () => {
@@ -49,7 +50,7 @@ const OrderStatusScreen = () => {
           });
 
           // Nếu userType bắt đầu bằng "C", chỉ giữ lại đơn hàng có status là "Đã xác nhận"
-          if (userType.startsWith("C")) {
+          if(userType.startsWith("C")){
             orderList = orderList.filter(
               (order) => order.status === "Đã xác nhận"
             );
@@ -105,7 +106,6 @@ const OrderStatusScreen = () => {
       "Sẵn sàng giao": 1,
       "Đang xử lý": 2,
       "Đã xác nhận": 3,
-      "Hoàn thành": 99, // Luôn nằm cuối danh sách
     };
 
     return [...ordersList].sort((a, b) => {
@@ -217,28 +217,42 @@ const OrderStatusScreen = () => {
                         </button>
                       ) : (
                         <>
+                        {order.status==="Đã xác nhận"?null:
+                        <button
+                        className="confirm-btn"
+                        onClick={() => handleConfirmOrReceiveOrder(order)}
+                      >
+                        {order.status === "Sẵn sàng giao"
+                          ? "Tiếp nhận"
+                          : "Xác nhận"}
+                      </button>}
+                          {order.status==="Sẵn sàng giao"?null
+                          :<>
                           <button
-                            className="confirm-btn"
-                            onClick={() => handleConfirmOrReceiveOrder(order)}
-                          >
-                            {order.status === "Sẵn sàng giao"
-                              ? "Tiếp nhận"
-                              : "Xác nhận"}
-                          </button>
-                          <button
-                            className="edit-btn"
-                            onClick={() =>
-                              alert(`Chỉnh sửa đơn hàng: ${order.id}`)
+                          className="edit-btn"
+                          onClick={async () =>{
+                            let thistableID;
+                            const thisOrderID = order.orderID;
+                            await editProduct(thisOrderID);
+                            if(order.tableNumber==="Mang đi"){
+                              navigate("/tommitres/Order/Takeaway", { state: { thisOrderID } });
                             }
-                          >
-                            Chỉnh sửa
-                          </button>
-                          <button
-                            className="delete-btn"
-                            onClick={() => handleDeleteOrder(order.id)}
-                          >
-                            Hủy đơn
-                          </button>
+                            else{
+                              thistableID= Number(order.tableNumber.slice(4));
+                              navigate(`/tommitres/Order/Table${thistableID}`, { state: { thisOrderID } });
+                            }
+                          }
+                          }
+                        >
+                          Chỉnh sửa
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={async () => handleDeleteOrder(order.id)}
+                        >
+                          Hủy đơn
+                        </button>
+                        </>}
                         </>
                       )}
                     </div>
