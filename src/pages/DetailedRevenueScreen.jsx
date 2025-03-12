@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import Header from "../components/Header";
-import UserProfile from "../backend/userProfile";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../backend/firebase";
 import "./orderStatusScreen.css";
 
 const RevenueExcelLikeScreen = () => {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [searchDate, setSearchDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { userType } = UserProfile();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -18,42 +17,47 @@ const RevenueExcelLikeScreen = () => {
         const ordersCollection = collection(db, "Order");
         const orderSnapshot = await getDocs(ordersCollection);
 
-        let orderList = orderSnapshot.docs
-          .map((doc) => ({
+        let orderList = orderSnapshot.docs.map((doc) => {
+          const orderData = doc.data();
+          return {
             id: doc.id,
-            ...doc.data(),
-            buyDate: doc.data().buyDate?.toDate() || null,
-          }))
+            ...orderData,
+            buyDate: orderData.buyDate?.toDate() || null, // Chuyển timestamp thành Date
+          };
+        });
+
+        orderList = orderList
           .filter((order) => order.status === "Hoàn thành")
           .sort((a, b) => b.buyDate - a.buyDate);
 
-        const groupedOrders = orderList.reduce((acc, order) => {
-          if (!order.buyDate) return acc;
+        // Nhóm đơn hàng theo ngày và tính tổng doanh thu
+        const groupedOrders = [];
+        const revenueByDate = {};
 
-          const dateKey = order.buyDate.toLocaleDateString("vi-VN");
-          if (!acc[dateKey]) acc[dateKey] = { orders: [], totalRevenue: 0 };
+        orderList.forEach((order) => {
+          if (!order.buyDate) return;
+          const orderDate = order.buyDate.toISOString().split("T")[0];
 
-          acc[dateKey].orders.push(order);
-          acc[dateKey].totalRevenue += order.totalPrice || 0;
-
-          return acc;
-        }, {});
-
-        let finalOrderList = [];
-        Object.entries(groupedOrders).forEach(
-          ([date, { orders, totalRevenue }]) => {
-            finalOrderList.push(...orders);
-            finalOrderList.push({
-              id: `total-${date}`,
-              isTotalRow: true,
-              buyDate: date,
-              totalRevenue,
-            });
+          if (!revenueByDate[orderDate]) {
+            revenueByDate[orderDate] = { total: 0, orders: [] };
           }
-        );
+          revenueByDate[orderDate].total += order.totalPrice || 0;
+          revenueByDate[orderDate].orders.push(order);
+        });
 
-        console.log("✅ Danh sách hóa đơn nhóm theo ngày:", finalOrderList);
-        setOrders(finalOrderList);
+        // Sắp xếp lại danh sách để mỗi nhóm ngày có dòng tổng doanh thu ở cuối
+        Object.keys(revenueByDate).forEach((date) => {
+          groupedOrders.push(...revenueByDate[date].orders);
+          groupedOrders.push({
+            id: `total-${date}`,
+            isTotalRow: true,
+            buyDate: date,
+            totalRevenue: revenueByDate[date].total,
+          });
+        });
+
+        setOrders(groupedOrders);
+        setFilteredOrders(groupedOrders); // Ban đầu hiển thị tất cả
       } catch (err) {
         console.error("❌ Lỗi khi lấy đơn hàng:", err);
         setError(err.message);
@@ -65,20 +69,34 @@ const RevenueExcelLikeScreen = () => {
     fetchOrders();
   }, []);
 
-  const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) return;
-
-    console.log(`🗑️ Đang xóa đơn hàng có ID: ${orderId}`);
-    try {
-      await deleteDoc(doc(db, "Order", orderId));
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => order.id !== orderId)
-      );
-      alert("Đã hủy đơn hàng thành công!");
-    } catch (error) {
-      console.error("❌ Lỗi khi xóa đơn hàng:", error);
-      alert("Xóa đơn hàng thất bại!");
+  // Cập nhật danh sách khi searchDate thay đổi
+  useEffect(() => {
+    if (!searchDate) {
+      setFilteredOrders(orders);
+      return;
     }
+
+    const filtered = orders.filter((order) => {
+      if (!order.buyDate) return false;
+      const orderDate =
+        order.buyDate instanceof Date
+          ? order.buyDate.toISOString().split("T")[0]
+          : order.buyDate;
+
+      // Chỉ lấy đơn hàng của ngày tìm kiếm
+      if (orderDate === searchDate) return true;
+
+      // Chỉ lấy tổng doanh thu của ngày tìm kiếm, bỏ tổng các ngày khác
+      if (order.isTotalRow && order.buyDate === searchDate) return true;
+
+      return false;
+    });
+
+    setFilteredOrders(filtered);
+  }, [searchDate, orders]);
+
+  const handleSearchDateChange = (e) => {
+    setSearchDate(e.target.value);
   };
 
   if (loading) return <div>Đang tải dữ liệu...</div>;
@@ -87,8 +105,21 @@ const RevenueExcelLikeScreen = () => {
   return (
     <div>
       <br />
-      <Header />
-      <h1>Quản lý trạng thái đơn hàng</h1>
+      <h1>Quản lý doanh thu</h1>
+
+      {/* Ô tìm kiếm ngày */}
+      <div style={{ marginBottom: "20px" }}>
+        <label htmlFor="searchDate" style={{ marginRight: "10px" }}>
+          Tìm đơn hàng theo ngày:
+        </label>
+        <input
+          type="date"
+          id="searchDate"
+          value={searchDate}
+          onChange={handleSearchDateChange}
+        />
+      </div>
+
       <br />
       <table className="order-table">
         <thead>
@@ -102,23 +133,30 @@ const RevenueExcelLikeScreen = () => {
           </tr>
         </thead>
         <tbody>
-          {orders.length === 0 ? (
+          {filteredOrders.length === 0 ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
+              <td colSpan="6" style={{ textAlign: "center" }}>
                 Không có đơn hàng nào!
               </td>
             </tr>
           ) : (
-            orders.map((order) =>
+            filteredOrders.map((order) =>
               order.isTotalRow ? (
                 <tr key={order.id} className="total-row">
                   <td
                     colSpan="4"
                     style={{ fontWeight: "bold", textAlign: "right" }}
                   >
-                    Tổng doanh thu ngày {order.buyDate}:
+                    Tổng doanh thu ngày{" "}
+                    {new Date(order.buyDate).toLocaleDateString("vi-VN")}:
                   </td>
-                  <td colSpan="2" style={{ fontWeight: "bold", color: "red" }}>
+                  <td
+                    style={{
+                      fontWeight: "bold",
+                      color: "red",
+                      textAlign: "center",
+                    }}
+                  >
                     {order.totalRevenue.toLocaleString("vi-VN")} VNĐ
                   </td>
                   <td></td>
@@ -137,37 +175,9 @@ const RevenueExcelLikeScreen = () => {
                   </td>
                   <td>{order.totalPrice?.toLocaleString("vi-VN")} VNĐ</td>
                   <td>
-                    {order.buyDate
-                      ? order.buyDate.toLocaleString("vi-VN")
-                      : "Không có dữ liệu"}
-                  </td>
-                  <td>
-                    {order.status !== "Hoàn thành" && (
-                      <div className="action-buttons">
-                        <button
-                          className="confirm-btn"
-                          onClick={() =>
-                            alert(`Xác nhận đơn hàng: ${order.id}`)
-                          }
-                        >
-                          Xác nhận
-                        </button>
-                        <button
-                          className="edit-btn"
-                          onClick={() =>
-                            alert(`Chỉnh sửa đơn hàng: ${order.id}`)
-                          }
-                        >
-                          Chỉnh sửa
-                        </button>
-                        <button
-                          className="delete-btn"
-                          onClick={() => handleDeleteOrder(order.id)}
-                        >
-                          Hủy đơn
-                        </button>
-                      </div>
-                    )}
+                    {order.buyDate instanceof Date
+                      ? order.buyDate.toLocaleDateString("vi-VN")
+                      : order.buyDate}
                   </td>
                 </tr>
               )
