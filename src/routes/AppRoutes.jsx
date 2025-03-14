@@ -21,6 +21,7 @@ import { UnreadProvider } from "../backend/notificationOrder";
 
 const AppRoutes = () => {
   return (
+    <Router>
     <Routes>
       <Route path="/tommitres" element={<UnreadProvider><Home /></UnreadProvider>} />
       <Route path="/tommitres/Login" element={<Login />} />
@@ -82,6 +83,7 @@ const AppRoutes = () => {
       ></Route>
       <Route path="/tommitres/yourorder" element={<YourOrder />} />
     </Routes>
+    </Router>
   );
 };
 
