@@ -145,9 +145,9 @@ const OrderStatusScreen = () => {
     try {
       await editProduct(order.orderID);
       await deleteDoc(doc(db, "Order", order.id));
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => order.id !== order.id)
-      );
+      // setOrders((prevOrders) =>
+      //   prevOrders.filter((order) => order.id !== order.id)
+      // );
       alert("Đã hủy đơn hàng thành công!");
     } catch (error) {
       console.error("❌ Lỗi khi xóa đơn hàng:", error);
