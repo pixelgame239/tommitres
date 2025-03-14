@@ -9,7 +9,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import { confirmOrder, createOrder, getOrderDetail } from "../backend/orderObject.js";
+import { confirmOrder, createOrder, findOrder, getOrderDetail, updateOrder } from "../backend/orderObject.js";
 import UserProfile from "../backend/userProfile";
 
 const YourOrder = () => {
@@ -52,8 +52,14 @@ const YourOrder = () => {
       }
     }
     currentOrders.paymentMethod = paymentMethod;
-    createOrder(currentOrders);
-    console.log(currentOrders);
+    if(await findOrder(currentOrders.orderID)){
+      await createOrder(currentOrders);
+      console.log("createNew");
+    }
+    else{
+      console.log("Update order");
+      await updateOrder(currentOrders);
+    }
   };
 
   // Hàm toggle hiển thị chi tiết tổng cộng

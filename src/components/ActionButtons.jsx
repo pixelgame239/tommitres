@@ -3,12 +3,15 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import ResponsiveScreen from "../styles/responsiveScreen";
 import UserProfile from "../backend/userProfile";
+import NotificationSign from "./NotificationSign";
+import { useUnreadContext } from "../backend/notificationOrder";
 
 const ActionButtons = () => {
   const navigate = useNavigate();
   const { width, height } = ResponsiveScreen();
   const isMobile = width <= 768;
   const { userType } = UserProfile();
+  const { unread } = useUnreadContext();
 
   if (userType === null || userType === undefined) {
     return null; // Return nothing if userType is null or undefined
@@ -27,6 +30,7 @@ const ActionButtons = () => {
         >
           Order
         </Button>
+        <div style={{position: "relative"}}>
         <Button
           variant="warning"
           className="px-4 py-2"
@@ -34,10 +38,13 @@ const ActionButtons = () => {
         >
           Quản lý đơn hàng
         </Button>
+        {unread===0?null:<NotificationSign />}
+        </div>
       </>
     );
   } else if (userType.startsWith("C")) {
     buttons = (
+      <div style={{position:"relative"}}>
       <Button
         variant="info"
         className="px-4 py-2"
@@ -45,6 +52,8 @@ const ActionButtons = () => {
       >
         Quản lý đơn hàng
       </Button>
+      {unread===0?null:<NotificationSign />}
+      </div>
     );
   } else {
     return (

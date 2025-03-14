@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import FoodItem from "../components/FoodItem";
 import fetchProduct from "../backend/fetchProduct";
 import { Product } from "../backend/productObject";
-import { Order } from "../backend/orderObject";
+import { editProduct, Order } from "../backend/orderObject";
 
 // Color constants
 const COLORS = {
@@ -111,9 +111,13 @@ const OrderScreen = ({ tableID }) => {
   const [foodData, setFoodData] = useState([]);
   const [drinkData, setDrinkData] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
+  const { thisOrderID } = location.state || {};
   const currentOrders = new Order();
-
+  if(thisOrderID!==null&&thisOrderID!==undefined){
+    currentOrders.orderID = thisOrderID;
+  }
   // Navigation to payment screen
   const handleNavPayment = () => {
     navigate("/tommitres/yourorder", { state: { currentOrders } });
