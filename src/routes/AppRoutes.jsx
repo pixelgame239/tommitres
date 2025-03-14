@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../components/Header";
 import CarouselSlider from "../components/MainCarousel";
 import ActionButtons from "../components/ActionButtons";
-import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import Order from "../pages/Order";
@@ -21,7 +21,6 @@ import { UnreadProvider } from "../backend/notificationOrder";
 
 const AppRoutes = () => {
   return (
-    <Router>
     <Routes>
       <Route path="/tommitres" element={<UnreadProvider><Home /></UnreadProvider>} />
       <Route path="/tommitres/Login" element={<Login />} />
@@ -83,7 +82,6 @@ const AppRoutes = () => {
       ></Route>
       <Route path="/tommitres/yourorder" element={<YourOrder />} />
     </Routes>
-    </Router>
   );
 };
 
