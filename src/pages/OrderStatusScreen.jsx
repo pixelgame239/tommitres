@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   collection,
-  getDocs,
   deleteDoc,
   doc,
   onSnapshot,
@@ -10,11 +10,12 @@ import Header from "../components/Header";
 import UserProfile from "../backend/userProfile";
 import { db } from "../backend/firebase";
 import "./orderStatusScreen.css";
-import { confirmOrder } from "../backend/orderObject";
+import { confirmOrder, editProduct } from "../backend/orderObject";
 import {
   changeStatusToSuccess,
   markOrderAsReady,
 } from "../backend/orderObject"; // Import hàm mới
+import { useUnreadContext } from "../backend/notificationOrder";
 
 const OrderStatusScreen = () => {
   const [orders, setOrders] = useState([]);
@@ -22,6 +23,8 @@ const OrderStatusScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userType } = UserProfile();
+  const navigate = useNavigate();
+  const { unread, setUnread } = useUnreadContext();
 
   useEffect(() => {
     const fetchOrders = () => {
@@ -44,15 +47,19 @@ const OrderStatusScreen = () => {
             return (
               order.buyDate.getFullYear() === today.getFullYear() &&
               order.buyDate.getMonth() === today.getMonth() &&
-              order.buyDate.getDate() === today.getDate()
+              order.buyDate.getDate() === today.getDate()&&order.status!=="Hoàn thành"
             );
           });
-
+          if(userType.startsWith("ST")){
+            let unreadOrder = orderList.filter((order)=>{if(order.status==="Đang xử lý"||order.status==="Sẵn sàng giao") return true});
+            setUnread(prevUnread=>prevUnread=unreadOrder.length);
+          }
           // Nếu userType bắt đầu bằng "C", chỉ giữ lại đơn hàng có status là "Đã xác nhận"
-          if (userType.startsWith("C")) {
+          if(userType.startsWith("C")){
             orderList = orderList.filter(
               (order) => order.status === "Đã xác nhận"
             );
+            setUnread(prevUnread=>prevUnread=orderList.length);
           }
 
           // Sắp xếp danh sách trước khi cập nhật state
@@ -105,7 +112,6 @@ const OrderStatusScreen = () => {
       "Sẵn sàng giao": 1,
       "Đang xử lý": 2,
       "Đã xác nhận": 3,
-      "Hoàn thành": 99, // Luôn nằm cuối danh sách
     };
 
     return [...ordersList].sort((a, b) => {
@@ -133,13 +139,14 @@ const OrderStatusScreen = () => {
   };
 
   // ✅ Xóa đơn hàng
-  const handleDeleteOrder = async (orderId) => {
+  const handleDeleteOrder = async (order) => {
     if (!window.confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) return;
 
     try {
-      await deleteDoc(doc(db, "Order", orderId));
+      await editProduct(order.orderID);
+      await deleteDoc(doc(db, "Order", order.id));
       setOrders((prevOrders) =>
-        prevOrders.filter((order) => order.id !== orderId)
+        prevOrders.filter((order) => order.id !== order.id)
       );
       alert("Đã hủy đơn hàng thành công!");
     } catch (error) {
@@ -217,28 +224,44 @@ const OrderStatusScreen = () => {
                         </button>
                       ) : (
                         <>
+                        {order.status==="Đã xác nhận"?null:
+                        <button
+                        className="confirm-btn"
+                        onClick={() => handleConfirmOrReceiveOrder(order)}
+                      >
+                        {order.status === "Sẵn sàng giao"
+                          ? "Tiếp nhận"
+                          : "Xác nhận"}
+                      </button>}
+                          {order.status==="Sẵn sàng giao"?null
+                          :<>
                           <button
-                            className="confirm-btn"
-                            onClick={() => handleConfirmOrReceiveOrder(order)}
-                          >
-                            {order.status === "Sẵn sàng giao"
-                              ? "Tiếp nhận"
-                              : "Xác nhận"}
-                          </button>
-                          <button
-                            className="edit-btn"
-                            onClick={() =>
-                              alert(`Chỉnh sửa đơn hàng: ${order.id}`)
+                          className="edit-btn"
+                          onClick={async () =>{
+                            let thistableID;
+                            const thisOrderID = order.orderID;
+                            await editProduct(thisOrderID);
+                            if(order.tableNumber==="Mang đi"){
+                              navigate("/tommitres/Order/Takeaway", { state: { thisOrderID } });
                             }
-                          >
-                            Chỉnh sửa
-                          </button>
-                          <button
-                            className="delete-btn"
-                            onClick={() => handleDeleteOrder(order.id)}
-                          >
-                            Hủy đơn
-                          </button>
+                            else{
+                              thistableID= Number(order.tableNumber.slice(4));
+                              navigate(`/tommitres/Order/Table${thistableID}`, { state: { thisOrderID } });
+                            }
+                          }
+                          }
+                        >
+                          Chỉnh sửa
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={async () => {
+                            await handleDeleteOrder(order);
+                          }}
+                        >
+                          Hủy đơn
+                        </button>
+                        </>}
                         </>
                       )}
                     </div>

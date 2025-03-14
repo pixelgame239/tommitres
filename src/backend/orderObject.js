@@ -11,6 +11,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "./firebase.js";
+import { modifiedProduct } from "./productObject.js";
 
 export class Order {
   constructor(
@@ -151,6 +152,45 @@ export async function createOrder(currentOrder) {
     })),
   });
 }
+export async function updateOrder(currentOrder) {
+  const updatedOrderData = {
+    paymentMethod: currentOrder.paymentMethod === "cash" ? "Tiền mặt" : "Chuyển khoản",
+    totalPrice: currentOrder.totalPrice,
+    products: currentOrder.products.map((product) => ({
+      productID: product.productID,
+      productName: product.productName,
+      orderQuantity: product.orderQuantity,
+      unitPrice: product.unitPrice,
+      singleProductPrice: product.singleProductPrice,
+    }))
+  };
+  const ordersRef = collection(db, 'Order');
+  const q = query(ordersRef, where('orderID', '==', Number(currentOrder.orderID)));
+
+  try {
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const docRef = querySnapshot.docs[0].ref;  
+
+      await updateDoc(docRef, updatedOrderData);
+      console.log('Order updated successfully!');
+    } else {
+      console.log('No matching order found.');
+    }
+  } catch (error) {
+    console.error('Error updating order:', error);
+  }
+}
+export async function findOrder(orderID) {
+  const ordersRef = collection(db, 'Order');  // Reference to 'orders' collection
+  const q = query(ordersRef, where('orderID', '==', Number(orderID)));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      return false;
+    } else {
+      return true; 
+    }
+}
 export async function confirmOrder(orderID, userType) {
   const queryOrderID = query(
     collection(db, "Order"),
@@ -190,6 +230,35 @@ export async function getOrderDetail(currentOrderID) {
     const billData = billSnapshot.docs[0].data();
     console.log(`query return: ${billData}`);
     return billData;
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function editProduct(currentOrderID) {
+  const thisOrderID = Number(currentOrderID);
+  const queryOrderID = query(
+    collection(db, "Order"),
+    where("orderID", "==", Number(thisOrderID))
+  );
+  const IDsnapshot = await getDocs(queryOrderID);
+  if (IDsnapshot.empty) {
+    console.log("No order found with the provided orderID");
+    return;
+  }
+  const IDdata = IDsnapshot.docs[0];
+  console.log(IDdata.data());
+  const dataRef = doc(db, "Order", IDdata.id);
+  const productsData = IDdata.data().products;
+  console.log(productsData);
+  productsData.forEach(async (product)=>{
+    console.log(product.orderQuantity);
+    await modifiedProduct(product.productID, product.orderQuantity);
+  })
+  try {
+    await updateDoc(dataRef, {
+      products:[]
+    });
+    console.log("Updated buydate and status");
   } catch (error) {
     console.log(error);
   }

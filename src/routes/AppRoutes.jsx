@@ -17,10 +17,12 @@ import AccountScreen from "../pages/manageAccount";
 import RevenueExcelLikeScreen from "../pages/DetailedRevenueScreen";
 import InvoiceForm from "../pages/InvoiceForm";
 import ThankYouScreen from "../pages/ThankYouScreen";
+import { UnreadProvider } from "../backend/notificationOrder";
+
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/tommitres" element={<Home />} />
+      <Route path="/tommitres" element={<UnreadProvider><Home /></UnreadProvider>} />
       <Route path="/tommitres/Login" element={<Login />} />
       <Route path="/tommitres/Reservation" element={<ReservationScreen />} />
       <Route path="/tommitres/Order" element={<Order />} />
@@ -30,7 +32,7 @@ const AppRoutes = () => {
         element={<RevenueExcelLikeScreen />}
       />
 
-      <Route path="/tommitres/manageOrder" element={<OrderStatusScreen />} />
+      <Route path="/tommitres/manageOrder" element={<UnreadProvider><OrderStatusScreen /></UnreadProvider>} />
 
       <Route path="/tommitres/manageAccount" element={<AccountScreen />} />
 
