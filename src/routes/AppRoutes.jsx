@@ -22,7 +22,7 @@ import { UnreadProvider } from "../backend/notificationOrder";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/tommitres" element={<UnreadProvider><Home /></UnreadProvider>} />
+      <Route path="/" element={<UnreadProvider><Home /></UnreadProvider>} />
       <Route path="/tommitres/Login" element={<Login />} />
       <Route path="/tommitres/Reservation" element={<ReservationScreen />} />
       <Route path="/tommitres/Order" element={<Order />} />
