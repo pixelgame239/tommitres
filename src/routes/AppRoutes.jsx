@@ -22,65 +22,65 @@ import { UnreadProvider } from "../backend/notificationOrder";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/tommitres" element={<UnreadProvider><Home /></UnreadProvider>} />
-      <Route path="/tommitres/Login" element={<Login />} />
-      <Route path="/tommitres/Reservation" element={<ReservationScreen />} />
-      <Route path="/tommitres/Order" element={<Order />} />
-      <Route path="/tommitres/Order/Takeaway" element={<OrderScreen />} />
+      <Route path="/" element={<UnreadProvider><Home /></UnreadProvider>} />
+      <Route path="/Login" element={<Login />} />
+      <Route path="/Reservation" element={<ReservationScreen />} />
+      <Route path="/Order" element={<Order />} />
+      <Route path="/Order/Takeaway" element={<OrderScreen />} />
       <Route
-        path="/tommitres/DetailedRevenue"
+        path="/DetailedRevenue"
         element={<RevenueExcelLikeScreen />}
       />
 
-      <Route path="/tommitres/manageOrder" element={<UnreadProvider><OrderStatusScreen /></UnreadProvider>} />
+      <Route path="/manageOrder" element={<UnreadProvider><OrderStatusScreen /></UnreadProvider>} />
 
-      <Route path="/tommitres/manageAccount" element={<AccountScreen />} />
+      <Route path="/manageAccount" element={<AccountScreen />} />
 
-      <Route path="/tommitres/Invoice" element={<InvoiceForm />} />
+      <Route path="/Invoice" element={<InvoiceForm />} />
 
-      <Route path="/tommitres/ThankYou" element={<ThankYouScreen />} />
+      <Route path="/ThankYou" element={<ThankYouScreen />} />
 
       <Route
-        path="/tommitres/Order/Table1"
+        path="/Order/Table1"
         element={<OrderScreen tableID={1}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table2"
+        path="/Order/Table2"
         element={<OrderScreen tableID={2}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table3"
+        path="/Order/Table3"
         element={<OrderScreen tableID={3}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table4"
+        path="/Order/Table4"
         element={<OrderScreen tableID={4}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table5"
+        path="/Order/Table5"
         element={<OrderScreen tableID={5}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table6"
+        path="/Order/Table6"
         element={<OrderScreen tableID={6}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table7"
+        path="/Order/Table7"
         element={<OrderScreen tableID={7}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table8"
+        path="/Order/Table8"
         element={<OrderScreen tableID={8}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table9"
+        path="/Order/Table9"
         element={<OrderScreen tableID={9}></OrderScreen>}
       ></Route>
       <Route
-        path="/tommitres/Order/Table10"
+        path="/Order/Table10"
         element={<OrderScreen tableID={10}></OrderScreen>}
       ></Route>
-      <Route path="/tommitres/yourorder" element={<YourOrder />} />
+      <Route path="/yourorder" element={<YourOrder />} />
     </Routes>
   );
 };
