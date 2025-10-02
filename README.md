@@ -6,3 +6,4 @@ For testing:
 Manager account: M0001/p@ssw0rd   
 Staff account: ST001/pst001   
 Chef account: C0001/pc001  
+For customer: Go to this link to order https://pixelgame239.github.io/tommitres/#/tommitres/order
